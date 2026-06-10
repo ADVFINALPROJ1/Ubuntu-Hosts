@@ -24,6 +24,7 @@ export async function getEventForRSVP(eventId: number) {
     .select({
       id:                 events.id,
       title:              events.title,
+      capacity:           events.capacity,
       available_capacity: events.available_capacity,
     })
     .from(events)
@@ -31,6 +32,21 @@ export async function getEventForRSVP(eventId: number) {
     .limit(1)
 
   return result[0] ?? null
+}
+
+export function isEventSoldOut(event: { capacity: number; available_capacity: number } | null): boolean {
+  if (!event) return true
+  return event.available_capacity <= 0
+}
+
+export function getEventAvailability(event: { capacity: number; available_capacity: number } | null) {
+  if (!event) return { status: 'not_found', available: 0, total: 0, soldOut: true }
+  return {
+    status: event.available_capacity > 0 ? 'available' : 'sold_out',
+    available: event.available_capacity,
+    total: event.capacity,
+    soldOut: event.available_capacity <= 0,
+  }
 }
 
 export async function checkDuplicateRSVP(eventId: number, email: string) {

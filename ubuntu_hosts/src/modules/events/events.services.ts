@@ -4,7 +4,10 @@ import { events } from '../../db/schema'
 import { CreateEventInput, UpdateEventInput } from './events.schemas'
 
 export const createEvent = async (data: CreateEventInput) => {
-  const [newEvent] = await db.insert(events).values(data).returning()
+  const [newEvent] = await db.insert(events).values({
+    ...data,
+    available_capacity: data.capacity,
+  }).returning()
   return newEvent
 }
 

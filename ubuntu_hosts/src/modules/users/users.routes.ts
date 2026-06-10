@@ -4,6 +4,8 @@ import {
   checkDuplicateRSVP,
   registerAttendee,
   getAttendeesByEventId,
+  isEventSoldOut,
+  getEventAvailability,
 } from './users.services'
 
 const usersRoute = new Hono()
@@ -32,8 +34,8 @@ usersRoute.post('/events/:id/rsvp', async (c) => {
     return c.json({ error: 'Event not found' }, 404)
   }
 
-  if (event.available_capacity <= 0) {
-    return c.json({ error: 'Event is fully booked' }, 409)
+  if (isEventSoldOut(event)) {
+    return c.json({ error: 'Event is sold out', soldOut: true }, 409)
   }
 
   const alreadyRegistered = await checkDuplicateRSVP(eventId, email.trim().toLowerCase())
@@ -47,6 +49,22 @@ usersRoute.post('/events/:id/rsvp', async (c) => {
     message: 'Registration successful',
     confirmation,
   }, 201)
+})
+
+usersRoute.get('/events/:id/availability', async (c) => {
+  const eventId = Number(c.req.param('id'))
+
+  if (isNaN(eventId)) {
+    return c.json({ error: 'Invalid event ID' }, 400)
+  }
+
+  const event = await getEventForRSVP(eventId)
+  if (!event) {
+    return c.json({ error: 'Event not found' }, 404)
+  }
+
+  const availability = getEventAvailability(event)
+  return c.json({ availability })
 })
 
 function generateCSV(attendees: { name: string; email: string; status: string; registered_at: Date | null }[]): string {

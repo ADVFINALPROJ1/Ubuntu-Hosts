@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp,integer } from 'drizzle-orm/pg-core'
+import { pgTable, serial, text, timestamp, integer } from 'drizzle-orm/pg-core'
 
 export const events = pgTable('events', {
   id: serial('id').primaryKey(),
@@ -7,6 +7,7 @@ export const events = pgTable('events', {
   time: text('time').notNull(),
   location: text('location').notNull(),
   description: text('description').notNull(),
+  capacity: integer('capacity').notNull().default(0),
   available_capacity: integer('available_capacity').notNull().default(0),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
