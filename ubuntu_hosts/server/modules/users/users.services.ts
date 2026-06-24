@@ -79,13 +79,7 @@ export async function registerAttendee(
         email:    input.email.trim().toLowerCase(),
         status:   'Registered',
       })
-      .returning({
-        id:         attendees.id,
-        name:       attendees.name,
-        email:      attendees.email,
-        status:     attendees.status,
-        created_at: attendees.created_at,
-      })
+      .returning()
 
     await tx
       .update(events)
