@@ -6,6 +6,27 @@ import { requireOrganizer, requireAuth } from '../../lib/middleware'
 
 const eventRoutes = new Hono()
 
+// PUBLIC — anyone can view events
+eventRoutes.get('/', async (c) => {
+  const rawPage = Number(c.req.query('page'))
+  const rawLimit = Number(c.req.query('limit'))
+  const page = Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1
+  const limit = Number.isInteger(rawLimit) && rawLimit >= 10 && rawLimit <= 100 ? rawLimit : 10
+  const sortBy = (c.req.query('sortBy') ?? 'date') as 'date' | 'location'
+  const order = (c.req.query('order') ?? 'asc') as 'asc' | 'desc'
+  const { events, total } = await getAllEvents({ page, limit, sortBy, order })
+  const totalPages = Math.ceil(total / limit)
+  return c.json({
+    events,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    },
+  })
 eventRoutes.post('/', requireOrganizer, zValidator('json', createEventSchema), async (c) => {
   const data = c.req.valid('json')
   const event = await createEvent(data)
@@ -18,7 +39,8 @@ eventRoutes.get('/', async (c) => {
   return c.json({ events })
 })
 
-eventRoutes.get('/:id', requireAuth, async (c) => {
+// PUBLIC — anyone can view event details
+eventRoutes.get('/:id', async (c) => {
   const id = Number(c.req.param('id'))
   const event = await getEventById(id)
   if (!event) return c.json({ message: 'Event not found' }, 404)

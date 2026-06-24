@@ -2,7 +2,8 @@ import { eq, sql, and } from 'drizzle-orm'
 import { db } from '../../db/db'                        
 import { attendees } from './users.schemas'
 import { events } from '../../db/schema'                
-import { getEventById } from '../events/events.services' 
+import { getEventById } from '../events/events.services'
+import { registrationConfirmationMail } from '../../lib/email' 
 
 export interface RSVPInput {
   name:  string
@@ -93,6 +94,24 @@ export async function registerAttendee(
 
     return inserted
   })
+
+  // Send confirmation email
+  try {
+    const event = await getEventById(eventId)
+    if (event) {
+      await registrationConfirmationMail({
+        to: newAttendee.email,
+        name: newAttendee.name,
+        eventTitle: event.title,
+        eventDate: event.date,
+        eventTime: event.time,
+        eventLocation: event.location,
+        attendeeId: newAttendee.id,
+      })
+    }
+  } catch (emailError) {
+    console.error("Failed to send confirmation email:", emailError)
+  }
 
   return {
     attendee_id:   newAttendee.id,
