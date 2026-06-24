@@ -10,9 +10,34 @@ export const createEvent = async (data: CreateEventInput) => {
   return newEvent
 }
 
-export const getAllEvents = async () => {
-  return await db.select().from(events)
-}
+import { desc, asc } from "drizzle-orm"; // Make sure to import these from drizzle
+
+export const getAllEvents = async (options?: {
+  page: number;
+  limit: number;
+  sortBy: "date" | "location";
+  order: "asc" | "desc";
+}) => {
+  // Fallback defaults if no options are passed
+  const page = options?.page ?? 1;
+  const limit = options?.limit ?? 10;
+  const sortBy = options?.sortBy ?? "date";
+  const order = options?.order ?? "asc";
+
+  // Calculate how many items to skip
+  const offset = (page - 1) * limit;
+
+  // Determine the column to sort by dynamically
+  const orderColumn = sortBy === "location" ? events.location : events.date;
+  const orderByExpression = order === "desc" ? desc(orderColumn) : asc(orderColumn);
+
+  return await db
+    .select()
+    .from(events)
+    .orderBy(orderByExpression)
+    .limit(limit)
+    .offset(offset);
+};
 
 export const getEventById = async (id: number) => {
   const [event] = await db.select().from(events).where(eq(events.id, id))
