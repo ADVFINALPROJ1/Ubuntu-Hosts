@@ -3,7 +3,6 @@ import { cors } from 'hono/cors'
 import eventRoutes from './modules/events/events.routes'
 import usersRoute from './modules/users/users.routes'
 import { auth } from './lib/auth'
-import { cors } from 'hono/cors'
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router"
 
 const app = new Hono()
