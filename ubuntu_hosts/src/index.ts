@@ -3,8 +3,8 @@ import { cors } from 'hono/cors'
 import eventRoutes from './modules/events/events.routes'
 import usersRoute from './modules/users/users.routes'
 import { auth } from './lib/auth'
-import { cors } from 'hono/cors'
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router"
+import paymentsRouter from "./modules/payments/payments.routes";
 
 const app = new Hono()
 
@@ -24,8 +24,10 @@ app.use(
 )
 
 // Routes
-app.route('/events', eventRoutes)
+app.route('/events', eventRoutes as any)
 app.route('/', usersRoute)
+app.route("/api/payments", paymentsRouter);
+
 
 // Better Auth Endpoint Handler
 app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw))
