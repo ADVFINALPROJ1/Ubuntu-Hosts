@@ -27,6 +27,16 @@ eventRoutes.get('/', async (c) => {
       hasPrevPage: page > 1,
     },
   })
+eventRoutes.post('/', requireOrganizer, zValidator('json', createEventSchema), async (c) => {
+  const data = c.req.valid('json')
+  const event = await createEvent(data)
+  return c.json({ message: 'Event created', event }, 201)
+})
+
+// PUBLIC — anyone can view events
+eventRoutes.get('/', async (c) => {
+  const events = await getAllEvents()
+  return c.json({ events })
 })
 
 // PUBLIC — anyone can view event details
@@ -38,12 +48,6 @@ eventRoutes.get('/:id', async (c) => {
 })
 
 // PROTECTED — organizer only
-eventRoutes.post('/', requireOrganizer, zValidator('json', createEventSchema), async (c) => {
-  const data = c.req.valid('json')
-  const event = await createEvent(data)
-  return c.json({ message: 'Event created', event }, 201)
-})
-
 eventRoutes.put('/:id', requireOrganizer, zValidator('json', updateEventSchema), async (c) => {
   const id = Number(c.req.param('id'))
   const data = c.req.valid('json')
