@@ -1,13 +1,20 @@
 {
   "name": "ubuntu_hosts",
   "scripts": {
-    "dev": "bun run --hot src/index.ts",
+    "dev": "concurrently \"bun run server\" \"bun run client\"",
     "db:generate:migration": "drizzle-kit generate",
+    "client": "cd client && bun run dev",
+    "server": "bun run --hot server/index.ts",
+    "db:up": "docker compose up -d",
+    "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "bun run ./scripts/seed-local-db.script.ts",
+    "open-auth-docs": "open-cli http://localhost:3000/api/auth/reference"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.8.0",
+    "@neondatabase/serverless": "^1.1.0",
     "better-auth": "^1.6.20",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
@@ -17,13 +24,16 @@
     "postgres": "^3.4.9",
     "react-router": "^8.0.1",
     "uuid": "^14.0.1",
+    "ws": "^8.21.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/nodemailer": "^8.0.1",
     "@types/pg": "^8.20.0",
+    "@types/ws": "^8.18.1",
     "drizzle-kit": "^0.31.10",
-    "drizzle-seed": "^0.3.1"
+    "drizzle-seed": "^0.3.1",
+    "concurrently": "^9.2.0"
   }
 }
