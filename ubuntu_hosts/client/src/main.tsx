@@ -11,6 +11,7 @@ import OrganizerDashboard from "./OrganizerDashboard";
 import EventForm from "./EventForm";
 import PaymentRedirect from "./PaymentRedirect";
 import CheckoutReservation from "./components/CheckoutReservation";
+import OrderSummaryPage from "./components/OrderSummaryPage";
 
 const route = createBrowserRouter([
   { path: "/", element: <App /> },
@@ -22,6 +23,7 @@ const route = createBrowserRouter([
   { path: "/create-event", element: <EventForm mode="create" /> },
   { path: "/edit-event/:id", element: <EventForm mode="edit" /> },
   { path: "/payment", element: <PaymentRedirect /> },
+  { path: "/order-summary", element: <OrderSummaryPage /> },
   { path: "/checkout", element: <CheckoutReservation /> },
 ]);
 
