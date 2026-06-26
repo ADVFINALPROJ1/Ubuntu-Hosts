@@ -6,6 +6,8 @@ export const createEventSchema = z.object({
   time: z.string().min(1, 'Time is required'),
   location: z.string().min(1, 'Location is required'),
   description: z.string().min(1, 'Description is required'),
+  capacity: z.number().min(1, 'Capacity is required'),
+  available_capacity: z.number().optional(),
 })
 
 export const updateEventSchema = createEventSchema.partial()
