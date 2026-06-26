@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     name: deploy
 
+    defaults:
+      run:
+        working-directory: ubuntu_hosts
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
