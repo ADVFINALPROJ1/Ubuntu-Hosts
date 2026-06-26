@@ -8,6 +8,7 @@ import usersRoute from './modules/users/users.routes'
 import { auth } from './lib/auth'
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router"
 import paymentsRouter from "./modules/payments/payments.routes";
+import { serveStatic } from 'hono/bun'
 
 const app = new Hono()
 
@@ -17,7 +18,7 @@ const app = new Hono()
 app.use(
   '/*',
   cors({
-    origin: 'http://localhost:5000', 
+    origin: process.env.CLIENT_URL || 'http://localhost:5000',
     allowHeaders: ['Content-Type', 'Authorization', 'X-Custom-Header'],
     allowMethods: ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE'],
     exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
@@ -41,9 +42,6 @@ app.post('/logout', async (c) => {
   return c.json({ message: 'Logged out successfully. Redirecting to landing page.' })
 })
 
-app.get('/', (c) => {
-  return c.text('Ubuntu Hosts API is running')
-})
 
 // React Router integration exports
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -53,5 +51,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export async function action({ request }: ActionFunctionArgs) {
     return auth.handler(request)
 }
+
+// Serve static files from client build
+app.use('/*', serveStatic({ root: './client/dist' }))
+
+// Catch-all: let React Router handle client-side routes
+app.get('/*', serveStatic({ path: './client/dist/index.html' }))
 
 export default app

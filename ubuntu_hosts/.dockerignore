@@ -1,0 +1,7 @@
+node_modules
+client/node_modules
+frontend/
+.env
+client/.env
+client/.env.local
+*.md
