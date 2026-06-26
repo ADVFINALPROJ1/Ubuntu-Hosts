@@ -27,11 +27,11 @@ export const initializePayment = async (paymentData: {
         first_name: paymentData.first_name,
         last_name: paymentData.last_name,
         tx_ref,
-        callback_url: "https://yourdomain.com/payment/callback",
-        return_url: "https://yourfrontend.com/payment-success",
+        callback_url: "https://ubuntu-hosts-5zts.onrender.com/payment/callback",
+        return_url: `http://localhost:5000/payment-callback?tx_ref=${tx_ref}`,
         customization: {
           title: "Ticket Payment",
-          description: "Payment for event ticket",
+          description: "Event ticket",
         },
       }),
     }
@@ -44,11 +44,10 @@ export const initializePayment = async (paymentData: {
 
   if (!data || !data.data || !data.data.checkout_url) {
     throw new Error(
-      `Chapa error: ${data?.message ?? "No checkout URL returned"}`
+      `Chapa error: ${JSON.stringify(data?.message ?? "No checkout URL returned")}`
     );
   }
 
-  // Save registration as "pending" in the DB
   await db.insert(registrations).values({
     event_id: paymentData.event_id,
     first_name: paymentData.first_name,

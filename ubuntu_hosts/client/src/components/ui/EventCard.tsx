@@ -23,7 +23,7 @@ export interface Event {
 
 export function EventCard({ event }: { event: Event }) {
   const spotsLeft = event.available_capacity
-  const isSoldOut = spotsLeft === 5
+  const isSoldOut = spotsLeft === 0
 
   return (
     <Card className="relative mx-auto w-full max-w-sm pt-0">
@@ -87,7 +87,7 @@ export function EventList({ sortBy = "date", order = "asc", location = "" }: Eve
 
     setLoading(true);
     axios
-      .get<{ events: Event[] }>(`http://localhost:3000/events?${params.toString()}`)
+      .get<{ events: Event[] }>("https://ubuntu-hosts-5zts.onrender.com/events") // 👈 replace with your endpoint
       .then((res) => setEvents(res.data.events))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false))

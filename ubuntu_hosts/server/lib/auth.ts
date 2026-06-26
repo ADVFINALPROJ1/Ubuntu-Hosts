@@ -25,7 +25,12 @@ export const auth = betterAuth({
       });
     },
   },
-  trustedOrigins: ["http://localhost:5173"],
+  trustedOrigins: [
+  "http://localhost:5000",
+  "http://localhost:5173",
+  "https://ubuntu-hosts-frontend.onrender.com",
+  "https://ubuntu-hosts-5zts.onrender.com",
+],
    user: {
     additionalFields: {
       role: {

@@ -18,7 +18,7 @@ const app = new Hono()
 app.use(
   '/*',
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5000',
+    origin: 'https://ubuntu-hosts-frontend.onrender.com',
     allowHeaders: ['Content-Type', 'Authorization', 'X-Custom-Header'],
     allowMethods: ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE'],
     exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
@@ -57,6 +57,7 @@ app.use('/*', serveStatic({ root: './client/dist' }))
 
 // Catch-all: let React Router handle client-side routes
 app.get('/*', serveStatic({ path: './client/dist/index.html' }))
+
 export default {
   fetch: app.fetch,
   port: Number(process.env.PORT) || 3000,

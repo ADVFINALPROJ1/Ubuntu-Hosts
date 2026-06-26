@@ -37,7 +37,7 @@ interface Event {
   attendees: Attendee[];
 }
 
-const API = "https://ubuntu-hosts.fly.dev";
+const API = "https://ubuntu-hosts-5zts.onrender.com";
 
 export const OrganizerDashboard = () => {
   const [events, setEvents] = useState<Event[]>([]);

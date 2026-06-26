@@ -107,9 +107,11 @@ export function AppSidebar() {
             <SidebarGroup>
               <SidebarGroupLabel>Create an Event</SidebarGroupLabel>
               <Link to="/view-dashboard">Dashboard</Link>
-              <SidebarGroupAction>
-                <Plus /> <span className="sr-only">Add Project</span>
-              </SidebarGroupAction>
+              <SidebarGroupAction asChild>
+                  <Link to="/create-event">
+                    <Plus /> <span className="sr-only">Add Project</span>
+                  </Link>
+                </SidebarGroupAction>
               <SidebarGroupContent></SidebarGroupContent>
             </SidebarGroup>
 

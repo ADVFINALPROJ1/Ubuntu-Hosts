@@ -1,19 +1,22 @@
-# Stage 1: Build the client
-FROM oven/bun:1 AS client-builder
-WORKDIR /app/client
-COPY client/package.json client/bun.lock* ./
+FROM oven/bun:1 AS base
+WORKDIR /app
+
+FROM base AS build
+COPY package.json bun.lock ./
+COPY client/package.json client/bun.lock ./client/
 RUN bun install
-COPY client/ .
+WORKDIR /app/client
+RUN bun install
+WORKDIR /app
+COPY . .
 RUN bun run build
 
-# Stage 2: Run the server
-FROM oven/bun:1
+FROM oven/bun:1 AS release
 WORKDIR /app
-COPY package.json bun.lock* ./
-RUN bun install
-COPY server/ ./server/
-COPY drizzle.config.ts ./
-COPY --from=client-builder /app/client/dist ./client/dist
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/client/dist ./client/dist
+COPY package.json bun.lock ./
+RUN bun install --production
 
 EXPOSE 3000
-CMD ["bun", "run", "server/index.ts"]
+CMD ["bun", "run", "start"]
