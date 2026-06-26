@@ -5,3 +5,14 @@ frontend/
 client/.env
 client/.env.local
 *.md
+
+.git
+.github
+.env
+.vscode
+node_modules
+client/node_modules/
+clent/dist
+dist
+scripts
+docker-compose.yaml
