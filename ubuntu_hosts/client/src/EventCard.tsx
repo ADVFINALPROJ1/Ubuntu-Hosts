@@ -25,7 +25,7 @@ export interface Event {
 
 export function EventCard({ event }: { event: Event }) {
   const spotsLeft = event.available_capacity
-  const isSoldOut = spotsLeft === 5
+  const isSoldOut = spotsLeft === 0
 
   return (
     <Card className="relative mx-auto w-full max-w-sm pt-0">
