@@ -1,7 +1,7 @@
 import { Toaster } from 'sonner';
 import './App.css'
 import { SkeletonContainer } from './CardSkeleton'
-import { EventCardPack } from './EventCard'
+import { EventList } from './EventCard'
 import NavBar from './NavBar'
 import { useState } from 'react';
 
@@ -31,7 +31,7 @@ function App() {
   <h1 style={{ textAlign: 'center',fontFamily: 'Arial, sans-serif',fontSize: '2rem',fontWeight: 'bold',padding: '1rem' }}>Trending Events</h1>
 
 
-  {loading ? <SkeletonContainer /> :<> <EventCardPack /> <EventCardPack /> <EventCardPack /> </>}
+  {loading ? <SkeletonContainer /> :<> <EventList/> </>}
    
 
   </section>
