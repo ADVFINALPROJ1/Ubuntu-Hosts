@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for ubuntu-hosts on 2026-06-26T11:53:21+03:00
+# fly.toml app configuration file generated for ubuntu-hosts-noble-moonbeam-987 on 2026-06-26T18:48:10+03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'ubuntu-hosts'
+app = 'ubuntu-hosts-noble-moonbeam-987'
 primary_region = 'jnb'
 
 [build]
