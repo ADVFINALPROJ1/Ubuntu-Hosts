@@ -18,7 +18,7 @@ const app = new Hono()
 app.use(
   '/*',
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5000',
+    origin: 'https://ubuntu-hosts-frontend.onrender.com',
     allowHeaders: ['Content-Type', 'Authorization', 'X-Custom-Header'],
     allowMethods: ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE'],
     exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],

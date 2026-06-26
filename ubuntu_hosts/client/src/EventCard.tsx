@@ -78,7 +78,7 @@ export function EventList() {
 
   useEffect(() => {
     axios
-      .get<{ events: Event[] }>("http://localhost:3000/events") // 👈 replace with your endpoint
+      .get<{ events: Event[] }>("https://ubuntu-hosts-5zts.onrender.com/events") // 👈 replace with your endpoint
       .then((res) => setEvents(res.data.events))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false))

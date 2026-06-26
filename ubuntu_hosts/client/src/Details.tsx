@@ -25,7 +25,7 @@ export function EventDetailPage() {
 
   useEffect(() => {
     axios
-      .get<{ event: Event }>(`http://localhost:3000/events/${id}`) 
+      .get<{ event: Event }>(`https://ubuntu-hosts-5zts.onrender.com/events/${id}`) 
       .then((res) => setEvent(res.data.event))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false))
