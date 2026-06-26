@@ -1,6 +1,5 @@
 import { config } from "dotenv";
 config({ path: ".env" });
-
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import eventRoutes from './modules/events/events.routes'
@@ -12,13 +11,19 @@ import { serveStatic } from 'hono/bun'
 
 const app = new Hono()
 
+if (!process.env.CORS_ORIGIN) {
+  throw new Error("FATAL ERROR: CORS_ORIGIN environment variable is not defined.");
+}
+
+const allowedOrigins = process.env.CORS_ORIGIN;
+
 /** * CORS Configuration 
  * Applied globally to all routes, properly allowing credentials and headers
  */
 app.use(
   '/*',
   cors({
-    origin: 'https://ubuntu-hosts-frontend.onrender.com',
+    origin: allowedOrigins,
     allowHeaders: ['Content-Type', 'Authorization', 'X-Custom-Header'],
     allowMethods: ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE'],
     exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
