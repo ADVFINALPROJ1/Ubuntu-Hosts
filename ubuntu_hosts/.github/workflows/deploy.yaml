@@ -8,15 +8,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-<<<<<<< HEAD:ubuntu_hosts/.github/workflows/deploy.yaml
-=======
-    name: deploy
-
-    defaults:
-      run:
-        working-directory: ubuntu_hosts
-
->>>>>>> 8ec17a12ef2f64803a72c29591c28ecab5eede82:.github/workflows/deploy.yaml
     steps:
       - uses: actions/checkout@v4
 
