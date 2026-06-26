@@ -3,7 +3,7 @@
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'ubuntu-hosts-noble-moonbeam-987'
+app = 'ubuntu-hosts'
 primary_region = 'jnb'
 
 [build]
