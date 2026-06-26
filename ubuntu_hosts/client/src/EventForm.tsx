@@ -6,7 +6,7 @@ import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
 import { toast } from "sonner";
 
-const API = "http://localhost:3000";
+const API = "https://ubuntu-hosts.fly.dev";
 
 interface EventFormData {
   title: string;
