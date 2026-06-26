@@ -28,7 +28,8 @@ export const auth = betterAuth({
   trustedOrigins: [
   "http://localhost:5000",
   "http://localhost:5173",
-  "https://ubuntu-hosts-noble-moonbeam-987.fly.dev",
+  "https://ubuntu-hosts-frontend.onrender.com",
+  "https://ubuntu-hosts-5zts.onrender.com",
 ],
    user: {
     additionalFields: {
