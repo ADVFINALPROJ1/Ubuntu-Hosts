@@ -57,5 +57,9 @@ app.use('/*', serveStatic({ root: './client/dist' }))
 
 // Catch-all: let React Router handle client-side routes
 app.get('/*', serveStatic({ path: './client/dist/index.html' }))
-
+Bun.serve({
+  fetch: app.fetch,
+  port: Number(process.env.PORT) || 3000,
+  hostname: '0.0.0.0'
+})
 export default app
