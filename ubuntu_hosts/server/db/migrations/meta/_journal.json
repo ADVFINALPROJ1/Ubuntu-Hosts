@@ -8,6 +8,13 @@
       "when": 1782331863161,
       "tag": "0000_ordinary_eddie_brock",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1782421385493,
+      "tag": "0001_boring_ezekiel",
+      "breakpoints": true
     }
   ]
 }

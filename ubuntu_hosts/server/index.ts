@@ -1,3 +1,6 @@
+import { config } from "dotenv";
+config({ path: ".env" });
+
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import eventRoutes from './modules/events/events.routes'
@@ -28,7 +31,6 @@ app.use(
 app.route('/events', eventRoutes as any)
 app.route('/', usersRoute)
 app.route("/api/payments", paymentsRouter);
-
 
 // Better Auth Endpoint Handler
 app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw))
