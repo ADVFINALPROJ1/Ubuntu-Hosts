@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import axios from "axios"
 import { Badge } from "./components/ui/badge"
 import { MapPin, Clock, Users, CalendarDays } from "lucide-react"
@@ -19,6 +19,7 @@ export interface Event {
 
 export function EventDetailPage() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const [event, setEvent] = useState<Event | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -40,13 +41,11 @@ export function EventDetailPage() {
   return (
     <div className="mx-auto max-w-2xl p-6 flex flex-col gap-6">
 
-      {/* Title & date badge */}
       <div className="flex items-start justify-between gap-4">
         <h1 className="text-2xl font-bold">{event.title}</h1>
         <Badge variant="destructive" className="shrink-0">{event.date}</Badge>
       </div>
 
-      {/* Meta info */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <MapPin className="h-4 w-4 shrink-0" />
@@ -70,11 +69,13 @@ export function EventDetailPage() {
         </div>
       </div>
 
-      {/* Description */}
       <p className="text-muted-foreground leading-relaxed">{event.description}</p>
 
-      {/* CTA */}
-      <Button className="w-full" disabled={isSoldOut}>
+      <Button 
+        className="w-full" 
+        disabled={isSoldOut}
+        onClick={() => navigate(`/checkout?eventId=${event.id}&quantity=1&price=25`)}
+      >
         {isSoldOut ? "Sold Out" : "Register for Event"}
       </Button>
 
