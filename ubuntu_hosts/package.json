@@ -32,8 +32,8 @@
     "@types/nodemailer": "^8.0.1",
     "@types/pg": "^8.20.0",
     "@types/ws": "^8.18.1",
+    "concurrently": "^10.0.3",
     "drizzle-kit": "^0.31.10",
-    "drizzle-seed": "^0.3.1",
-    "concurrently": "^9.2.0"
+    "drizzle-seed": "^0.3.1"
   }
 }
