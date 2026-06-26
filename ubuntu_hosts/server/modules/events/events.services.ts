@@ -4,13 +4,13 @@ import { events } from '../../db/schema'
 import { attendees } from '../users/users.schemas'
 import { CreateEventInput, UpdateEventInput } from './events.schemas'
 import { eventUpdateAlertMail, eventCancellationAlertMail } from '../../lib/email'
+import { desc, asc } from "drizzle-orm"; // Make sure to import these from drizzle
 
 export const createEvent = async (data: CreateEventInput) => {
   const [newEvent] = await db.insert(events).values(data).returning()
   return newEvent
 }
 
-import { desc, asc } from "drizzle-orm"; // Make sure to import these from drizzle
 
 export const getAllEvents = async (options?: {
   page: number;
