@@ -41,7 +41,7 @@ const CheckoutReservation = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("https://ubuntu-hosts.fly.dev/api/payments/initialize", {
+      const response = await fetch("https://ubuntu-hosts-5zts.onrender.com/api/payments/initialize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
