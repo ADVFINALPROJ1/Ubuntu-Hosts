@@ -7,7 +7,10 @@ import { eventUpdateAlertMail, eventCancellationAlertMail } from '../../lib/emai
 import { desc, asc } from "drizzle-orm"; // Make sure to import these from drizzle
 
 export const createEvent = async (data: CreateEventInput) => {
-  const [newEvent] = await db.insert(events).values(data).returning()
+  const [newEvent] = await db.insert(events).values({
+    ...data,
+    available_capacity: data.capacity,
+  }).returning()
   return newEvent
 }
 
