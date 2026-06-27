@@ -25,7 +25,7 @@ interface Event {
   available_capacity: number;
 }
 
-const API = "http://localhost:3000";
+const API = "https://ubuntu-hosts-5zts.onrender.com";
 
 export const OrganizerDashboard = () => {
   const [events, setEvents] = useState<Event[]>([]);

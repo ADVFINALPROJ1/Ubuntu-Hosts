@@ -27,8 +27,8 @@ export const initializePayment = async (paymentData: {
         first_name: paymentData.first_name,
         last_name: paymentData.last_name,
         tx_ref,
-        callback_url: "https://yourdomain.com/payment/callback",
-        return_url: `http://localhost:5173/payment-callback?tx_ref=${tx_ref}`,
+        callback_url: "https://ubuntu-hosts-5zts.onrender.com/payment/callback",
+        return_url: `http://localhost:5000/payment-callback?tx_ref=${tx_ref}`,
         customization: {
           title: "Ticket Payment",
           description: "Event ticket",
@@ -39,6 +39,7 @@ export const initializePayment = async (paymentData: {
 
   const data = await chapaResponse.json();
 
+  // Log Chapa's response so we can debug
   console.log("Chapa response:", JSON.stringify(data, null, 2));
 
   if (!data || !data.data || !data.data.checkout_url) {
