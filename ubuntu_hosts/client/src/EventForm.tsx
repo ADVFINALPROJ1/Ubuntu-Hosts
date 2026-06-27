@@ -5,8 +5,20 @@ import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
 import { toast } from "sonner";
+import NavBar from "./NavBar";
 
-const API = "https://ubuntu-hosts-5zts.onrender.com";
+let API:string;
+
+if(!import.meta.env.APP_ENV){
+  throw new Error("There is no APP_ENV in your env file!!!")
+}
+
+if(import.meta.env.APP_ENV === 'production'){
+  
+  API = import.meta.env.VITE_PRODUCTION_API;
+}
+
+ API = import.meta.env.VITE_LOCAL_API;
 
 interface EventFormData {
   title: string;
@@ -105,6 +117,8 @@ export const EventForm = ({ mode }: { mode: "create" | "edit" }) => {
   }
 
   return (
+    <>
+    <NavBar/>
     <div style={{ padding: "2rem", maxWidth: "600px", margin: "0 auto", fontFamily: "Arial, sans-serif" }}>
       <Card>
         <CardHeader>
@@ -124,7 +138,7 @@ export const EventForm = ({ mode }: { mode: "create" | "edit" }) => {
               <Input
                 id="title"
                 name="title"
-                placeholder="e.g. Anbesa Beer Festival 2026"
+                placeholder="e.g. Full-Stack Developer Meetup 2026"
                 value={form.title}
                 onChange={handleChange}
                 style={{ marginTop: "0.25rem" }}
@@ -222,6 +236,7 @@ export const EventForm = ({ mode }: { mode: "create" | "edit" }) => {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 };
 

@@ -25,7 +25,19 @@ export interface Event {
   createdAt: Date;
 }
 
-const apiUrl = import.meta.env.VITE_API_URL;
+let API:string;
+
+if(!import.meta.env.APP_ENV){
+  throw new Error("There is no APP_ENV in your env file!!!")
+}
+
+if(import.meta.env.APP_ENV === 'production'){
+  
+  API = import.meta.env.VITE_PRODUCTION_API;
+}
+
+ API = import.meta.env.VITE_LOCAL_API;
+
 
 export function EventCard({ event }: { event: Event }) {
   const spotsLeft = event.available_capacity;
@@ -117,7 +129,7 @@ export function EventList({
 
     setLoading(true);
     axios
-      .get<{ events: Event[] }>(`${apiUrl}events` || 'http://localhost:3000/events') 
+      .get<{ events: Event[] }>(`${API}/events` || 'http://localhost:3000/events') 
       .then((res) => setEvents(res.data.events))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
