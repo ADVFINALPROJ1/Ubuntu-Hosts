@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
+
   Table,
   TableBody,
   TableCell,
@@ -13,6 +14,16 @@ import { Button } from "./components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import { Pencil, Trash2, Users, LogOut } from "lucide-react";
 import { toast } from "sonner";
+import { AttendeesModal } from "./components/AttendeesModal";
+import { FilterBar, type FilterState } from "./components/ui/FilterBar";
+import { useMemo } from "react";
+
+interface Attendee {
+  id: string;
+  name: string;
+  registrationDate: string;
+  paymentStatus: "paid" | "pending" | "failed";
+}
 
 interface Event {
   id: number;
@@ -23,20 +34,38 @@ interface Event {
   description: string;
   capacity: number;
   available_capacity: number;
+  attendees: Attendee[];
 }
 
 const API = "https://ubuntu-hosts.fly.dev";
 
 export const OrganizerDashboard = () => {
   const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+ const [loading, setLoading] = useState(true);
+const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+const [filters, setFilters] = useState<FilterState>({ location: "", sortOrder: "asc" });
+const navigate = useNavigate();
 
   // Fetch all events on load
   useEffect(() => {
     fetchEvents();
   }, []);
+const locations = useMemo(
+  () => Array.from(new Set(events.map((e) => e.location))).sort(),
+  [events]
+);
 
+const filteredEvents = useMemo(() => {
+  let result = [...events];
+  if (filters.location) {
+    result = result.filter((e) => e.location === filters.location);
+  }
+  result.sort((a, b) => {
+    const diff = new Date(a.date).getTime() - new Date(b.date).getTime();
+    return filters.sortOrder === "asc" ? diff : -diff;
+  });
+  return result;
+}, [events, filters]);
   const fetchEvents = async () => {
     try {
       const res = await fetch(`${API}/events`);
@@ -87,7 +116,24 @@ export const OrganizerDashboard = () => {
   };
 
   return (
-    <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif" }}>
+    <div style={{ fontFamily: "Arial, sans-serif" }}>
+  <AttendeesModal
+    open={!!selectedEvent}
+    onClose={() => setSelectedEvent(null)}
+    event={selectedEvent ? {
+      id: String(selectedEvent.id),
+      title: selectedEvent.title,
+      attendees: selectedEvent.attendees ?? [],
+    } : null}
+  />
+
+  <FilterBar
+    locations={locations}
+    filters={filters}
+    onFilterChange={setFilters}
+  />
+
+  <div style={{ padding: "2rem" }}>
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
         <div>
@@ -165,10 +211,10 @@ export const OrganizerDashboard = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {events.map((event) => {
-                  const status = getStatus(event);
-                  return (
-                    <TableRow key={event.id}>
+  {filteredEvents.map((event) => {
+    const status = getStatus(event);
+    return (
+      <TableRow key={event.id}>
                       <TableCell style={{ fontWeight: "bold" }}>{event.title}</TableCell>
                       <TableCell>{event.date}</TableCell>
                       <TableCell>{event.time}</TableCell>
@@ -197,13 +243,13 @@ export const OrganizerDashboard = () => {
                             Edit
                           </Button>
                           <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => navigate(`/attendees/${event.id}`)}
-                          >
-                            <Users size={14} style={{ marginRight: "0.25rem" }} />
-                            Attendees
-                          </Button>
+    variant="outline"
+  size="sm"
+  onClick={() => setSelectedEvent(event)}
+>
+  <Users size={14} style={{ marginRight: "0.25rem" }} />
+  View Attendees
+</Button>
                           <Button
                             variant="destructive"
                             size="sm"
@@ -222,6 +268,7 @@ export const OrganizerDashboard = () => {
           )}
         </CardContent>
       </Card>
+   </div>
     </div>
   );
 };
