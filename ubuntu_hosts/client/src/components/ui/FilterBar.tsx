@@ -4,7 +4,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
+} from "./select";
 import { Button } from "./button";
 import { ArrowUpDown, MapPin, X } from "lucide-react";
 

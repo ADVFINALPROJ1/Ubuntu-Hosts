@@ -16,7 +16,6 @@ import { toast } from "sonner";
 import { Toaster } from "sonner";
 import { authClient } from "./lib/auth-client";
 import React from "react";
-import { any } from "zod";
 
 export function SignUp() {
   const navigate = useNavigate();
