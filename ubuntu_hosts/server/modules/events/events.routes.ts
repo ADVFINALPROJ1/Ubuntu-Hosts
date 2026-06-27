@@ -5,6 +5,7 @@ import {
   createEvent,
   getAllEvents,
   getEventById,
+  getAttendeesForEvent,
   updateEvent,
   deleteEvent,
 } from "./events.services";
@@ -26,11 +27,8 @@ eventRoutes.get("/", async (c) => {
   const order = (c.req.query("order") ?? "asc") as "asc" | "desc";
 
   // FIX: getAllEvents returns an array, so we fetch it directly here
-  const events = await getAllEvents({ page, limit, sortBy, order });
-  
-  // Note: Since getAllEvents handles slicing internally, events.length represents the current page count.
-  // For precise database totals, your getAllEvents function would need to return { events, totalCount } 
-  const total = events.length; 
+ const { events, total } = await getAllEvents({ page, limit, sortBy, order });
+
   const totalPages = Math.ceil(total / limit);
 
   return c.json({
@@ -57,7 +55,14 @@ eventRoutes.post(
     return c.json({ message: "Event created", event }, 201);
   },
 );
-
+// PROTECTED — organizer only to view attendees
+eventRoutes.get("/:id/attendees", requireOrganizer, async (c) => {
+  const id = Number(c.req.param("id"));
+  const event = await getEventById(id);
+  if (!event) return c.json({ message: "Event not found" }, 404);
+  const attendees = await getAttendeesForEvent(id);
+  return c.json({ attendees });
+});
 // PUBLIC — anyone can view event details
 eventRoutes.get("/:id", async (c) => {
   const id = Number(c.req.param("id"));
