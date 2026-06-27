@@ -1,29 +1,35 @@
-import { Badge } from "./badge"
-import { Button } from "./button"
+import { Badge } from "./badge";
+import { Button } from "./button";
 import {
-  Card, CardAction, CardDescription,
-  CardFooter, CardHeader, CardTitle,
-} from "./card"
-import { MapPin, Clock, Users } from "lucide-react"
-import { Link } from "react-router-dom"
-import { useEffect, useState } from "react"
-import axios from "axios"
+  Card,
+  CardAction,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./card";
+import { MapPin, Clock, Users } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export interface Event {
-  id: number
-  title: string
-  date: string
-  time: string
-  location: string
-  description: string
-  capacity: number
-  available_capacity: number
-  createdAt: Date
+  id: number;
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  description: string;
+  capacity: number;
+  available_capacity: number;
+  createdAt: Date;
 }
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 export function EventCard({ event }: { event: Event }) {
-  const spotsLeft = event.available_capacity
-  const isSoldOut = spotsLeft === 0
+  const spotsLeft = event.available_capacity;
+  const isSoldOut = spotsLeft === 0;
 
   return (
     <Card className="relative mx-auto w-full max-w-sm pt-0">
@@ -40,21 +46,41 @@ export function EventCard({ event }: { event: Event }) {
         <CardTitle>{event.title}</CardTitle>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "4px", margin: "5px 0 0 0" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+              margin: "5px 0 0 0",
+            }}
+          >
             <MapPin style={{ width: "14px", height: "14px" }} />
             <Badge variant="secondary">{event.location}</Badge>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "4px", padding: "5px 0" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+              padding: "5px 0",
+            }}
+          >
             <Clock style={{ width: "14px", height: "14px" }} />
             <span className="text-sm text-muted-foreground">{event.time}</span>
-            <Users style={{ width: "14px", height: "14px", margin: "0 0 0 10px" }} />
+            <Users
+              style={{ width: "14px", height: "14px", margin: "0 0 0 10px" }}
+            />
             <span className="text-sm text-muted-foreground">
-              {isSoldOut ? "Sold out" : `${spotsLeft} of ${event.capacity} spots left`}
+              {isSoldOut
+                ? "Sold out"
+                : `${spotsLeft} of ${event.capacity} spots left`}
             </span>
           </div>
         </div>
 
-        <CardDescription className="line-clamp-3 w-full">{event.description}</CardDescription>
+        <CardDescription className="line-clamp-3 w-full">
+          {event.description}
+        </CardDescription>
       </CardHeader>
       <CardFooter>
         <Link to={`/details/${event.id}`} style={{ width: "100%" }}>
@@ -73,10 +99,14 @@ interface EventListProps {
   location?: string;
 }
 
-export function EventList({ sortBy = "date", order = "asc", location = "" }: EventListProps) {
-  const [events, setEvents] = useState<Event[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+export function EventList({
+  sortBy = "date",
+  order = "asc",
+  location = "",
+}: EventListProps) {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams({
@@ -87,15 +117,17 @@ export function EventList({ sortBy = "date", order = "asc", location = "" }: Eve
 
     setLoading(true);
     axios
-      .get<{ events: Event[] }>("https://ubuntu-hosts-5zts.onrender.com/events") // 👈 replace with your endpoint
+      .get<{ events: Event[] }>(`${apiUrl}events` || 'http://localhost:3000/events') 
       .then((res) => setEvents(res.data.events))
       .catch((err) => setError(err.message))
-      .finally(() => setLoading(false))
-  }, [sortBy, order, location])
+      .finally(() => setLoading(false));
+  }, [sortBy, order, location]);
 
-  if (loading) return <p className="text-center mt-10">Loading events...</p>
-  if (error) return <p className="text-center mt-10 text-red-500">Error: {error}</p>
-  if (!events.length) return <p className="text-center mt-10">No events found.</p>
+  if (loading) return <p className="text-center mt-10">Loading events...</p>;
+  if (error)
+    return <p className="text-center mt-10 text-red-500">Error: {error}</p>;
+  if (!events.length)
+    return <p className="text-center mt-10">No events found.</p>;
 
   return (
     <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -103,5 +135,5 @@ export function EventList({ sortBy = "date", order = "asc", location = "" }: Eve
         <EventCard key={evt.id} event={evt} />
       ))}
     </div>
-  )
+  );
 }

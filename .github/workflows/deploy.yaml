@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     name: deploy
 
+    # Sets the working directory for all 'run' steps in this job
     defaults:
       run:
         working-directory: ubuntu_hosts
@@ -31,11 +32,3 @@ jobs:
         run: bun run db:migrate
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
-      - name: Setup Flyctl
-        uses: superfly/flyctl-actions/setup-flyctl@master
-
-      - name: Deploy to Fly.io
-        run: flyctl deploy --remote-only
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
