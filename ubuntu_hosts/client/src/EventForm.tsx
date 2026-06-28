@@ -9,7 +9,7 @@ import NavBar from "./NavBar";
 
 // ── API base URL ─────────────────────────────────────────────────────────────
 if (!import.meta.env.APP_ENV) {
-  throw new Error("There is no VITE_APP_ENV in your env file!");
+  throw new Error("There is no APP_ENV in your env file!");
 }
 
 const API: string =
@@ -186,7 +186,7 @@ export const EventForm = ({ mode }: { mode: "create" | "edit" }) => {
             ? "Event created successfully"
             : "Event updated successfully"
         );
-        navigate("/dashboard");
+        navigate("/");
       } else if (res.status === 403) {
         toast.error("You do not have permission to perform this action");
       } else {

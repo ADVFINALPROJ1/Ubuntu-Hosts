@@ -11,7 +11,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "./ui/sidebar";
-import { ChevronDown, Plus } from "lucide-react";
+import { ChevronDown, LayoutDashboard, Plus } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -106,7 +106,13 @@ export function AppSidebar() {
           <SidebarContent>
             <SidebarGroup>
               <SidebarGroupLabel>Create an Event</SidebarGroupLabel>
-              <Link to="/view-dashboard">Dashboard</Link>
+              
+          <Separator />
+          <div style={{'margin':'10px'}}>
+              <Link to="/dashboard">
+              <div style={{'display':'flex','gap':'10px'}}><LayoutDashboard />Dashboard</div></Link>
+              </div>
+          <Separator />
               <SidebarGroupAction asChild>
                   <Link to="/create-event">
                     <Plus /> <span className="sr-only">Add Project</span>

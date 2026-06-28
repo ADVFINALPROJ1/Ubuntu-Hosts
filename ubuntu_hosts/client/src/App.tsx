@@ -1,11 +1,13 @@
-import { Toaster } from 'sonner';
-import './App.css';
-import { SkeletonContainer } from './CardSkeleton';
-import { EventList } from './components/ui/EventCard';
-import NavBar from './NavBar';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { FilterBar, type FilterState } from './components/ui/FilterBar';
+import { Toaster } from "sonner";
+import "./App.css";
+import { SkeletonContainer } from "./CardSkeleton";
+import { EventList } from "./components/ui/EventCard";
+import NavBar from "./NavBar";
+import { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import { FilterBar, type FilterState } from "./components/ui/FilterBar";
+import HeroSection from './HeroSection'
+
 
 // ── API base URL ─────────────────────────────────────────────────────────────
 if (!import.meta.env.APP_ENV) {
@@ -16,7 +18,6 @@ const API: string =
   import.meta.env.APP_ENV === "production"
     ? import.meta.env.VITE_PRODUCTION_API
     : import.meta.env.VITE_LOCAL_API;
-
 
 function App() {
   const [loading] = useState(false);
@@ -31,7 +32,7 @@ function App() {
       .get<{ events: { location: string }[] }>(`${API}/events?limit=100`)
       .then((res) => {
         const unique = Array.from(
-          new Set(res.data.events.map((e) => e.location))
+          new Set(res.data.events.map((e) => e.location)),
         ).sort();
         setLocations(unique);
       })
@@ -43,30 +44,18 @@ function App() {
       <Toaster />
       <NavBar />
 
-      <section
-        className="hero-section"
-        style={{
-          padding: '1rem',
-          backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.93)), url(/hero_section_bg.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          height: '80vh',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <h1 style={{ textAlign: 'center', fontFamily: 'Arial, sans-serif', fontSize: '4rem', fontWeight: '900', padding: '1rem' }}>
-          Discover, Attend, Connect.
-        </h1>
-        <h1 style={{ textAlign: 'center', fontFamily: 'Arial, sans-serif', fontSize: '1rem', fontWeight: 'bold', padding: '0.3rem' }}>
-          Discover local events and experiences happening right around you.
-        </h1>
-      </section>
+      <HeroSection />
 
-      <section className="skeleton-container" style={{ padding: '1rem' }}>
-        <h1 style={{ textAlign: 'center', fontFamily: 'Arial, sans-serif', fontSize: '2rem', fontWeight: 'bold', padding: '1rem' }}>
+      <section className="skeleton-container" style={{ padding: "1rem" }}>
+        <h1
+          style={{
+            textAlign: "center",
+            fontFamily: "Arial, sans-serif",
+            fontSize: "2rem",
+            fontWeight: "bold",
+            padding: "1rem",
+          }}
+        >
           Trending Events
         </h1>
 
