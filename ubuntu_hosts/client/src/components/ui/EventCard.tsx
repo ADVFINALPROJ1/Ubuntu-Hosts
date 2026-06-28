@@ -33,9 +33,9 @@ try{
  console.log("I couldn't access the APP_ENV")
 }
 
-if (!import.meta.env.APP_ENV) {
-  throw new Error("There is no APP_ENV in your env file!");
-}
+// if (!import.meta.env.APP_ENV) {
+//   throw new Error("There is no APP_ENV in your env file!");
+// }
 
 const API: string =
   import.meta.env.APP_ENV === "production"
