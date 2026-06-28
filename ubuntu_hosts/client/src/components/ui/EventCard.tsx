@@ -25,8 +25,6 @@ export interface Event {
   createdAt: Date;
 }
 
-const apiUrl = import.meta.env.VITE_API_URL;
-
 export function EventCard({ event }: { event: Event }) {
   const spotsLeft = event.available_capacity;
   const isSoldOut = spotsLeft === 0;
@@ -109,15 +107,9 @@ export function EventList({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const params = new URLSearchParams({
-      sortBy,
-      order,
-      ...(location ? { location } : {}),
-    });
-
     setLoading(true);
     axios
-      .get<{ events: Event[] }>(`${apiUrl}events` || 'http://localhost:3000/events') 
+      .get<{ events: Event[] }>(`https://ubuntu-hosts-5zts.onrender.com/events?sortBy=${sortBy}&order=${order}${location ? `&location=${location}` : ''}`)
       .then((res) => setEvents(res.data.events))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));

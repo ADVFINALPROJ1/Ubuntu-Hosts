@@ -17,7 +17,7 @@ function App() {
 
   useEffect(() => {
     axios
-      .get<{ events: { location: string }[] }>("http://localhost:3000/events?limit=100")
+      .get<{ events: { location: string }[] }>("https://ubuntu-hosts-5zts.onrender.com/events?limit=100")
       .then((res) => {
         const unique = Array.from(
           new Set(res.data.events.map((e) => e.location))
