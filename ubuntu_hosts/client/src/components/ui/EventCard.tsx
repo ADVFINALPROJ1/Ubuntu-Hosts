@@ -25,6 +25,18 @@ export interface Event {
   createdAt: Date;
 }
 
+// ── API base URL ─────────────────────────────────────────────────────────────
+if (!import.meta.env.APP_ENV) {
+  throw new Error("There is no VITE_APP_ENV in your env file!");
+}
+
+const API: string =
+  import.meta.env.APP_ENV === "production"
+    ? import.meta.env.VITE_PRODUCTION_API
+    : import.meta.env.VITE_LOCAL_API;
+
+
+
 export function EventCard({ event }: { event: Event }) {
   const spotsLeft = event.available_capacity;
   const isSoldOut = spotsLeft === 0;
@@ -109,7 +121,7 @@ export function EventList({
   useEffect(() => {
     setLoading(true);
     axios
-      .get<{ events: Event[] }>(`https://ubuntu-hosts-5zts.onrender.com/events?sortBy=${sortBy}&order=${order}${location ? `&location=${location}` : ''}`)
+      .get<{ events: Event[] }>(`${API}/events` || 'http://localhost:3000/events') 
       .then((res) => setEvents(res.data.events))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));

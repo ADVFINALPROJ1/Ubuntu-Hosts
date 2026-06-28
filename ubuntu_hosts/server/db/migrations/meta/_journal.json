@@ -15,6 +15,13 @@
       "when": 1782421385493,
       "tag": "0001_boring_ezekiel",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1782609353361,
+      "tag": "0002_exotic_kid_colt",
+      "breakpoints": true
     }
   ]
 }

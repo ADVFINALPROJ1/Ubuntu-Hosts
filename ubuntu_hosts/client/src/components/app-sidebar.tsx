@@ -89,9 +89,9 @@ export function AppSidebar() {
                         <AvatarFallback>{session.user.name?.[0]?.toUpperCase() ?? "U"}</AvatarFallback>
                       </Avatar>
                       <div style={{ display: "block", flexDirection: "row" }}>
-                        <Badge variant="ghost">{session.user.name}</Badge>
+                        <Badge variant="ghost">{session?.user.name || "Couldn't fetch name"}</Badge>
                         <div></div>
-                        <Badge variant="outline">{session.user.email}</Badge>
+                        <Badge variant="outline">{session?.user.email || "Couldn't fetch email"}</Badge>
                       </div>
                     </div>
                   </>
@@ -131,11 +131,11 @@ export function AppSidebar() {
 
             <SidebarMenu>
               {Events.map((event) => (
-                <SidebarMenuItem key={event.name}>
+                <SidebarMenuItem key={event?.name}>
                   <SidebarMenuButton asChild>
-                    <a href={event.url}>
+                    <a href={event?.url}>
                       <event.icon />
-                      <span>{event.name}</span>
+                      <span>{event?.name}</span>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

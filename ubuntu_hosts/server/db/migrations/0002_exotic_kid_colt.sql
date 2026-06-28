@@ -1,0 +1,5 @@
+CREATE TYPE "public"."category" AS ENUM('CONCERT', 'CONFERENCE', 'WORKSHOP', 'NETWORKING', 'FESTIVAL', 'SPORTS', 'EXHIBITION', 'WEBINAR', 'SOCIAL_GATHERING', 'HACKATHON', 'MEETUP', 'SEMINAR', 'KEYNOTE', 'PANEL_DISCUSSION', 'JOB_FAIR', 'PRODUCT_LAUNCH', 'LIVE_MUSIC', 'COMEDY_SHOW', 'THEATER_ART', 'NIGHTLIFE_PARTY', 'FOOD_DRINK', 'MOVIE_SCREENING', 'GAMING_TOURNAMENT', 'OTHER');--> statement-breakpoint
+ALTER TABLE "events" ADD COLUMN "price" integer DEFAULT 0 NOT NULL;--> statement-breakpoint
+ALTER TABLE "events" ADD COLUMN "category" "category";--> statement-breakpoint
+ALTER TABLE "events" ADD COLUMN "is_rsvp_required" boolean DEFAULT true;--> statement-breakpoint
+ALTER TABLE "events" ADD COLUMN "image_url" text DEFAULT 'https://drive.google.com/file/d/17O8lWsiK_BcZRaAJUIysnbZSrbzGf7PF/view?usp=sharing';

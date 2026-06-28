@@ -1,40 +1,69 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Card, CardContent } from "./ui/card";
 import { Separator } from "./ui/separator";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
-import EventBanner from "./EventBanner";
-import EventDescription from "./EventDescription";
 import EventDateTime from "./EventDateTime";
 import EventLocation from "./EventLocation";
+import axios from "axios";
+import { authClient } from "../lib/auth-client";
 
-// Inline TicketSidebar — replaces RSVPSection + TicketCheckoutCard in the sidebar
+export interface Event {
+  id: number;
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  description: string;
+  capacity: number;
+  available_capacity: number;
+  createdAt: Date;
+  imageUrl: string;
+  price: number;
+  category: string;
+  isRsvpRequired: boolean;
+}
+// ── API base URL ─────────────────────────────────────────────────────────────
+if (!import.meta.env.APP_ENV) {
+  throw new Error("There is no VITE_APP_ENV in your env file!");
+}
+
+const API: string =
+  import.meta.env.APP_ENV === "production"
+    ? import.meta.env.VITE_PRODUCTION_API
+    : import.meta.env.VITE_LOCAL_API;
+
+
+// ── TicketSidebar ────────────────────────────────────────────────────────────
 const TicketSidebar = ({
   price,
-  capacity,
+  available_capacity,
   eventId,
 }: {
   price: number;
   capacity: number;
+  available_capacity: number;
   eventId: number;
 }) => {
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
-  const soldOut = capacity === 0;
+   const { data: session } = authClient.useSession();
+
+  const isSoldOut = available_capacity === 0;
   const totalPrice = quantity * price;
 
   const increase = () => {
-    if (quantity < capacity) setQuantity((q) => q + 1);
+    if (quantity < available_capacity) setQuantity((q) => q + 1);
   };
   const decrease = () => {
     if (quantity > 1) setQuantity((q) => q - 1);
   };
 
   const handleGetTickets = () => {
-    if (soldOut) return;
+    if (isSoldOut) return;
     navigate(
-      `/order-summary?quantity=${quantity}&price=${price}&eventId=${eventId}`
+      `/order-summary?quantity=${quantity}&price=${price}&eventId=${eventId}`,
     );
   };
 
@@ -59,18 +88,10 @@ const TicketSidebar = ({
                   <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
                 </svg>
               </div>
-              <span className="text-sm font-medium">GREAT ETHIOPIAN RUN PLC</span>
+              <span className="text-sm font-medium">
+                GREAT ETHIOPIAN RUN PLC
+              </span>
             </div>
-            {/* <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-4 h-4 text-muted-foreground"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M9 18l6-6-6-6" />
-            </svg> */}
           </div>
         </div>
 
@@ -94,23 +115,28 @@ const TicketSidebar = ({
               <path d="M16 3.13a4 4 0 0 1 0 7.75" />
             </svg>
             <span className="font-semibold">
-              {capacity === 0 ? "0 spots left" : `${capacity} spots remaining`}
+              {available_capacity === 0
+                ? "0 spots left"
+                : `${available_capacity} spots remaining`}
             </span>
           </div>
           <p className="text-xs text-muted-foreground mt-1">
-            Purchase tickets for this event through the organizer's ticketing platform.
+            Purchase tickets for this event through the organizer's ticketing
+            platform.
           </p>
         </div>
 
         {/* Ticket quantity selector */}
-        {!soldOut && (
+        {!isSoldOut && (
           <div className="space-y-2">
             <p className="text-sm text-muted-foreground">Ticket Quantity</p>
             <div className="flex items-center gap-4">
               <Button variant="outline" size="sm" onClick={decrease}>
                 −
               </Button>
-              <span className="text-lg font-bold w-6 text-center">{quantity}</span>
+              <span className="text-lg font-bold w-6 text-center">
+                {quantity}
+              </span>
               <Button variant="outline" size="sm" onClick={increase}>
                 +
               </Button>
@@ -129,10 +155,10 @@ const TicketSidebar = ({
         {/* Get Tickets button */}
         <Button
           className="w-full"
-          disabled={soldOut}
+          disabled={isSoldOut}
           onClick={handleGetTickets}
         >
-          {soldOut ? "Sold Out" : "Get Tickets"}
+          {isSoldOut ? "Sold Out" : "Get Tickets"}
         </Button>
 
         {/* RSVP notice */}
@@ -151,83 +177,65 @@ const TicketSidebar = ({
               <line x1="8" y1="2" x2="8" y2="6" />
               <line x1="3" y1="10" x2="21" y2="10" />
             </svg>
-            <p className="text-sm font-semibold text-amber-800">Reservation required</p>
+            <p className="text-sm font-semibold text-amber-800">
+              Reservation required
+            </p>
           </div>
           <p className="text-xs text-amber-700">
-            This is a Reservation-only event. You need to reserve a spot before attending. Walk-ins are not
-            accepted.
+            This is a Reservation-only event. You need to reserve a spot before
+            attending. Walk-ins are not accepted.
           </p>
         </div>
 
         <p className="text-xs text-muted-foreground text-center">
           Reserve a spot at this event.
         </p>
-        <Link to="/signup">
-        <Button
-          className="w-full"
-          onClick={handleGetTickets}
-          disabled={soldOut}
-        >
-          {soldOut ? "No Spots Available" : "Sign in to Reserve Your Spot"}
-        </Button>
-        </Link>
-        <Separator />
 
-        {/* Discussion */}
-        {/* <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-4 h-4"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-            <p className="font-semibold">Discussion</p>
-          </div>
-          <p className="text-sm text-muted-foreground">Got questions? Something to discuss?</p>
-          <p className="text-sm text-muted-foreground">Sign in to join the discussion.</p>
-          <Button variant="outline" className="w-full" size="sm">
-            Sign in to comment
-          </Button>
-        </div> */}
+        {!session && (
+          <Link to="/signup">
+            <Button className="w-full" disabled={isSoldOut}>
+              {isSoldOut
+                ? "No Spots Available"
+                : "Sign in to Reserve Your Spot"}
+            </Button>
+          </Link>
+        )}
+
+        <Separator />
       </CardContent>
     </Card>
   );
 };
 
+// ── EventInformationPanel ────────────────────────────────────────────────────
 const EventInformationPanel = () => {
-  const event = {
-    id: 1,
-    title: "Ethiopian Great Run 2026",
-    category: "Sports & Fitness",
-    imageUrl:
-      "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=1200",
-    description:
-      "Get ready for the — Africa’s iconic road race experience! \nJoin thousands of runners and supporters in the vibrant streets of Addis Ababa for a day filled with energy, passion, fitness, and celebration 🎉🔥\n \nWhether you are running to compete, stay healthy, or simply enjoy the unforgettable atmosphere, this event brings together people from all walks of life for an inspiring experience ❤️🏅\n ✨ Live entertainment \n✨ Exciting community spirit \n✨ Memorable moments & achievements \n📅 Don’t miss your chance to be part of Ethiopia’s biggest running celebration in 2026. Register now and make every step count!",
-    
-      date: "August 12, 2026",
-    time: "6:00 PM - 11:30 PM",
-    venue: "Addis Ababa  main Streets",
-    address: "Addis Ababa, Ethiopia",
-    price: 25,
-    capacity: 10000,
-    isRsvpRequired: true,
-  };
+  const { id } = useParams<{ id: string }>();
+  const [event, setEvent] = useState<Event | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    axios
+      .get<{ event: Event }>(`${API}/events/${id}`)
+      .then((res) => setEvent(res.data.event))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) return <p className="text-center mt-10">Loading event...</p>;
+  if (error)
+    return <p className="text-center mt-10 text-red-500">Error: {error}</p>;
+  if (!event) return <p className="text-center mt-10">Event not found.</p>;
 
   return (
     <div className="container mx-auto py-10 px-4 max-w-6xl">
-      {/* Two-column layout: main content + sidebar */}
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Left: main content */}
         <div className="flex-1 space-y-8">
           {/* Banner */}
           <div className="overflow-hidden rounded-xl">
             <img
-              src={event.imageUrl}
+              src={event.imageUrl || "../public/event_cover.jpg"}
               alt="Event Banner"
               className="w-full object-cover"
               style={{ maxHeight: "420px" }}
@@ -240,7 +248,10 @@ const EventInformationPanel = () => {
             <div className="flex items-center gap-2">
               <Badge variant="secondary">{event.category}</Badge>
               {event.isRsvpRequired && (
-                <Badge variant="outline" className="text-amber-700 border-amber-400">
+                <Badge
+                  variant="outline"
+                  className="text-amber-700 border-amber-400"
+                >
                   📋 Reservation required
                 </Badge>
               )}
@@ -257,30 +268,12 @@ const EventInformationPanel = () => {
             </p>
           </div>
 
-          {/* Competitions list from image */}
-          {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {[
-              { icon: "🎭", label: "Cosplay Competition" },
-              { icon: "🎮", label: "Gaming Tournament" },
-              { icon: "📖", label: "Anime Story Arc Challenge" },
-              { icon: "🍱", label: "Japanese Food Experience" },
-            ].map((item) => (
-              <div
-                key={item.label}
-                className="flex items-center gap-3 rounded-lg border p-3"
-              >
-                <span className="text-xl">{item.icon}</span>
-                <span className="font-medium text-sm">{item.label}</span>
-              </div>
-            ))}
-          </div> */}
-
           <Separator />
 
           {/* Date & Venue */}
           <div className="grid gap-6 md:grid-cols-2">
             <EventDateTime date={event.date} time={event.time} />
-            <EventLocation venue={event.venue} address={event.address} />
+            <EventLocation venue={event.location} address={event.location} />
           </div>
         </div>
 
@@ -289,6 +282,7 @@ const EventInformationPanel = () => {
           <TicketSidebar
             price={event.price}
             capacity={event.capacity}
+            available_capacity={event.available_capacity}
             eventId={event.id}
           />
         </div>

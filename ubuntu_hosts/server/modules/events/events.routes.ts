@@ -47,7 +47,6 @@ eventRoutes.get("/", async (c) => {
 // PROTECTED — organizer only to create event
 eventRoutes.post(
   "/",
- requireOrganizer,
   zValidator("json", createEventSchema),
   async (c) => {
     const data = c.req.valid("json");

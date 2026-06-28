@@ -19,4 +19,5 @@ export default defineConfig({
     sourcemap: true, 
   },
   envDir: '../',
+  envPrefix: ['VITE_', 'APP_'],
 });

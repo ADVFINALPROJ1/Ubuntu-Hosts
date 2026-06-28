@@ -4,15 +4,17 @@ import { Button } from "./components/ui/button";
 import { InputInline } from "./SearchBar";
 import SideBar from "./SideBar";
 import { authClient } from "./lib/auth-client";
+import { Plus } from "lucide-react";
 
 const children = <p></p>;
 
 function NavBar() {
-  const { data: session,isPending } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
+  const role = session?.user?.role;
 
   if (isPending) {
-  return <div>Checking authentication...</div>; 
-}
+    return <div>Checking authentication...</div>;
+  }
 
   return (
     <>
@@ -34,6 +36,14 @@ function NavBar() {
 
         <div className="right_buttons">
           <InputInline />
+          {role == "organizer" && (
+            <Link to="/create-event">
+              <Button>
+                <Plus></Plus>
+                Create
+              </Button>
+            </Link>
+          )}
 
           {!session && (
             <Link to="/login">
