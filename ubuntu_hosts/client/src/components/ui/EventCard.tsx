@@ -128,7 +128,7 @@ export function EventList({
   useEffect(() => {
     setLoading(true);
     axios
-      .get<{ events: Event[] }>(`${API}/events` || 'https://ubuntu-hosts-5zts.onrender.com') 
+      .get<{ events: Event[] }>("https://ubuntu-hosts-5zts.onrender.com/events?limit=100") 
       .then((res) => setEvents(res.data.events))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
