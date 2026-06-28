@@ -3,21 +3,14 @@ import "./App.css";
 import { SkeletonContainer } from "./CardSkeleton";
 import { EventList } from "./components/ui/EventCard";
 import NavBar from "./NavBar";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { FilterBar, type FilterState } from "./components/ui/FilterBar";
-import HeroSection from './HeroSection'
+import HeroSection from './HeroSection';
 
-
-// ── API base URL ─────────────────────────────────────────────────────────────
-if (!import.meta.env.APP_ENV) {
-  throw new Error("There is no VITE_APP_ENV in your env file!");
-}
-
-const API: string =
-  import.meta.env.APP_ENV === "production"
-    ? import.meta.env.VITE_PRODUCTION_API
-    : import.meta.env.VITE_LOCAL_API;
+const API: string = import.meta.env.APP_ENV === "production"
+  ? import.meta.env.VITE_PRODUCTION_API
+  : import.meta.env.VITE_LOCAL_API ?? "http://localhost:3000";
 
 function App() {
   const [loading] = useState(false);
@@ -43,28 +36,16 @@ function App() {
     <>
       <Toaster />
       <NavBar />
-
       <HeroSection />
-
       <section className="skeleton-container" style={{ padding: "1rem" }}>
-        <h1
-          style={{
-            textAlign: "center",
-            fontFamily: "Arial, sans-serif",
-            fontSize: "2rem",
-            fontWeight: "bold",
-            padding: "1rem",
-          }}
-        >
+        <h1 style={{ textAlign: "center", fontFamily: "Arial, sans-serif", fontSize: "2rem", fontWeight: "bold", padding: "1rem" }}>
           Trending Events
         </h1>
-
         <FilterBar
           locations={locations}
           filters={filters}
           onFilterChange={setFilters}
         />
-
         {loading ? (
           <SkeletonContainer />
         ) : (
