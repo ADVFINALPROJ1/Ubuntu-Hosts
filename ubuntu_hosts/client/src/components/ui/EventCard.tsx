@@ -126,12 +126,6 @@ export function EventList({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const params = new URLSearchParams({
-      sortBy,
-      order,
-      ...(location ? { location } : {}),
-    });
-
     setLoading(true);
     axios
       .get<{ events: Event[] }>(`${API}/events` || 'https://ubuntu-hosts-5zts.onrender.com') 
