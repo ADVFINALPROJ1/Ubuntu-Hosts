@@ -26,8 +26,15 @@ export interface Event {
 }
 
 // ── API base URL ─────────────────────────────────────────────────────────────
+try{
+  console.log("APP_ENV is currently:", import.meta.env.APP_ENV);
+  
+}catch(Error){
+ console.log("I couldn't access the APP_ENV")
+}
+
 if (!import.meta.env.APP_ENV) {
-  throw new Error("There is no VITE_APP_ENV in your env file!");
+  throw new Error("There is no APP_ENV in your env file!");
 }
 
 const API: string =
@@ -45,7 +52,7 @@ export function EventCard({ event }: { event: Event }) {
     <Card className="relative mx-auto w-full max-w-sm pt-0">
       <div className="absolute inset-0 z-30 aspect-video bg-black/35" />
       <img
-        src="./public/event_cover.jpg"
+        src="/event_cover.jpg"
         alt={`${event.title} cover`}
         className="relative z-20 aspect-video w-full object-cover brightness-60 dark:brightness-40"
       />
@@ -121,7 +128,7 @@ export function EventList({
   useEffect(() => {
     setLoading(true);
     axios
-      .get<{ events: Event[] }>(`${API}/events` || 'http://localhost:3000/events') 
+      .get<{ events: Event[] }>(`${API}/events` || 'https://ubuntu-hosts-5zts.onrender.com') 
       .then((res) => setEvents(res.data.events))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));

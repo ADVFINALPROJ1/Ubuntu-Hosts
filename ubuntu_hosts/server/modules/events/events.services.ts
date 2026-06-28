@@ -8,12 +8,20 @@ import { desc, asc } from "drizzle-orm"; // Make sure to import these from drizz
 
 export const createEvent = async (data: CreateEventInput) => {
   const [newEvent] = await db.insert(events).values({
-    ...data,
+    title: data.title,
+    date: data.date,
+    time: data.time,
+    location: data.location,
+    description: data.description,
+    capacity: data.capacity,
     available_capacity: data.capacity,
-  }).returning()
-  return newEvent
-}
-
+    price: data.price,
+    category: data.category as typeof events.$inferInsert.category,
+    is_rsvp_required: data.isRsvpRequired,
+    image_url: data.imageUrl,
+  }).returning();
+  return newEvent;
+};
 
 export const getAllEvents = async (options?: {
   page: number;
@@ -63,7 +71,11 @@ export const updateEvent = async (id: number, data: UpdateEventInput) => {
   const oldEvent = await getEventById(id)
   if (!oldEvent) return null
 
-  const [updated] = await db.update(events).set(data).where(eq(events.id, id)).returning()
+  const [updated] = await db.update(events).set({
+    ...data,
+    category: data.category as typeof events.$inferInsert.category,
+  }).where(eq(events.id, id)).returning()
+
   
   if (updated) {
     const attendeesList = await getAttendeesForEvent(id)
