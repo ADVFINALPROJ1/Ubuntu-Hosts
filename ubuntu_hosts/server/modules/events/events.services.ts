@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { db } from '../../db/db'
 import { events } from '../../db/schema'
 import { attendees } from '../users/users.schemas'
@@ -21,25 +21,27 @@ export const getAllEvents = async (options?: {
   sortBy: "date" | "location";
   order: "asc" | "desc";
 }) => {
-  // Fallback defaults if no options are passed
   const page = options?.page ?? 1;
   const limit = options?.limit ?? 10;
   const sortBy = options?.sortBy ?? "date";
   const order = options?.order ?? "asc";
-
-  // Calculate how many items to skip
   const offset = (page - 1) * limit;
 
-  // Determine the column to sort by dynamically
   const orderColumn = sortBy === "location" ? events.location : events.date;
   const orderByExpression = order === "desc" ? desc(orderColumn) : asc(orderColumn);
 
-  return await db
+  const [{ count }] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(events);
+
+  const rows = await db
     .select()
     .from(events)
     .orderBy(orderByExpression)
     .limit(limit)
     .offset(offset);
+
+  return { events: rows, total: Number(count) };
 };
 
 export const getEventById = async (id: number) => {
@@ -47,7 +49,7 @@ export const getEventById = async (id: number) => {
   return event
 }
 
-async function getAttendeesForEvent(eventId: number) {
+export async function getAttendeesForEvent(eventId: number) {
   return await db
     .select({
       name: attendees.name,
