@@ -7,6 +7,17 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FilterBar, type FilterState } from './components/ui/FilterBar';
 
+// ── API base URL ─────────────────────────────────────────────────────────────
+if (!import.meta.env.APP_ENV) {
+  throw new Error("There is no VITE_APP_ENV in your env file!");
+}
+
+const API: string =
+  import.meta.env.APP_ENV === "production"
+    ? import.meta.env.VITE_PRODUCTION_API
+    : import.meta.env.VITE_LOCAL_API;
+
+
 function App() {
   const [loading] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
@@ -17,7 +28,7 @@ function App() {
 
   useEffect(() => {
     axios
-      .get<{ events: { location: string }[] }>("http://localhost:3000/events?limit=100")
+      .get<{ events: { location: string }[] }>(`${API}/events?limit=100`)
       .then((res) => {
         const unique = Array.from(
           new Set(res.data.events.map((e) => e.location))

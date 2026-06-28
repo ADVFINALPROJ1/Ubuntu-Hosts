@@ -25,18 +25,16 @@ export interface Event {
   createdAt: Date;
 }
 
-let API:string;
-
-if(!import.meta.env.APP_ENV){
-  throw new Error("There is no APP_ENV in your env file!!!")
+// ── API base URL ─────────────────────────────────────────────────────────────
+if (!import.meta.env.APP_ENV) {
+  throw new Error("There is no VITE_APP_ENV in your env file!");
 }
 
-if(import.meta.env.APP_ENV === 'production'){
-  
-  API = import.meta.env.VITE_PRODUCTION_API;
-}
+const API: string =
+  import.meta.env.APP_ENV === "production"
+    ? import.meta.env.VITE_PRODUCTION_API
+    : import.meta.env.VITE_LOCAL_API;
 
- API = import.meta.env.VITE_LOCAL_API;
 
 
 export function EventCard({ event }: { event: Event }) {

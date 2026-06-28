@@ -1,18 +1,66 @@
-import { pgTable, serial, text, timestamp, integer, boolean } from 'drizzle-orm/pg-core'
+import {
+  pgTable,
+  serial,
+  text,
+  timestamp,
+  integer,
+  boolean,
+  pgEnum,
+} from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { index } from "drizzle-orm/pg-core";
+const CATEGORIES = [
+  "CONCERT",
+  "CONFERENCE",
+  "WORKSHOP",
+  "NETWORKING",
+  "FESTIVAL",
+  "SPORTS",
+  "EXHIBITION",
+  "WEBINAR",
+  "SOCIAL_GATHERING",
 
-export const events = pgTable('events', {
-  id: serial('id').primaryKey(),
-  title: text('title').notNull(),
-  date: text('date').notNull(),
-  time: text('time').notNull(),
-  location: text('location').notNull(),
-  description: text('description').notNull(),
-  capacity: integer('capacity').notNull().default(0),
-  available_capacity: integer('available_capacity').notNull().default(0),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-})
+  // Tech & Professional
+  "HACKATHON",
+  "MEETUP",
+  "SEMINAR",
+  "KEYNOTE",
+  "PANEL_DISCUSSION",
+  "JOB_FAIR",
+  "PRODUCT_LAUNCH",
+
+  // Entertainment & Culture
+  "LIVE_MUSIC",
+  "COMEDY_SHOW",
+  "THEATER_ART",
+  "NIGHTLIFE_PARTY",
+  "FOOD_DRINK",
+  "MOVIE_SCREENING",
+  "GAMING_TOURNAMENT",
+
+  // Fallback
+  "OTHER",
+] as const;
+
+export const eventCategories = pgEnum("category", CATEGORIES);
+
+export const events = pgTable("events", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  date: text("date").notNull(),
+  time: text("time").notNull(),
+  location: text("location").notNull(),
+  description: text("description").notNull(),
+  capacity: integer("capacity").notNull().default(0),
+  available_capacity: integer("available_capacity").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  price: integer("price").notNull().default(0),
+  category: eventCategories("category"),
+  is_rsvp_required: boolean("is_rsvp_required").default(true),
+  image_url: text().default(
+    "https://drive.google.com/file/d/17O8lWsiK_BcZRaAJUIysnbZSrbzGf7PF/view?usp=sharing",
+  ),
+});
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),

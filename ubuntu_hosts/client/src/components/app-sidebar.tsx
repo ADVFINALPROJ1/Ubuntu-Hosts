@@ -86,7 +86,7 @@ export function AppSidebar() {
                     >
                       <Avatar>
                         <AvatarImage src="https://github.com/shadcnf.png" />
-                        <AvatarFallback>{session?.user?.name[0].toUpperCase()}</AvatarFallback>
+                        <AvatarFallback>{session.user.name?.[0]?.toUpperCase() ?? "U"}</AvatarFallback>
                       </Avatar>
                       <div style={{ display: "block", flexDirection: "row" }}>
                         <Badge variant="ghost">{session?.user.name || "Couldn't fetch name"}</Badge>
