@@ -1,5 +1,6 @@
 import EventInformationPanel from "./components/EventInformationPanel";
 import Navbar from "./NavBar";
+import Footer from "./Footer";
 
 function EventDetails() {
   return (
@@ -10,6 +11,7 @@ function EventDetails() {
           <EventInformationPanel />
         </div>
       </div>
+      <Footer/>
     </>
   );
 }

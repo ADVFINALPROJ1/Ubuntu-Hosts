@@ -1,4 +1,3 @@
-import { Toaster } from "sonner";
 import "./App.css";
 import { SkeletonContainer } from "./CardSkeleton";
 import { EventList } from "./components/ui/EventCard";
@@ -25,6 +24,7 @@ function App() {
   const [filters, setFilters] = useState<FilterState>({
     location: "",
     sortOrder: "asc",
+    category:"",
   });
   const [locations, setLocations] = useState<string[]>([]);
 
@@ -42,7 +42,6 @@ function App() {
 
   return (
     <>
-      <Toaster />
       <NavBar />
 
       <HeroSection />

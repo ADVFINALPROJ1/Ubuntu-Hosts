@@ -44,7 +44,7 @@ export function EventCard({ event }: { event: Event }) {
     <Card className="relative mx-auto w-full max-w-sm pt-0 flex flex-col">
       <div className="absolute inset-0 z-30 aspect-video bg-black/35" />
       <img
-        src="./public/event_cover.jpg"
+        src="/event_cover.jpg"
         alt={`${event.title} cover`}
         className="relative z-20 aspect-video w-full object-cover brightness-60 dark:brightness-40"
       />

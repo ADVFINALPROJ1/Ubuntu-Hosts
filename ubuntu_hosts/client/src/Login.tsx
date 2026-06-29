@@ -12,6 +12,7 @@ import {
 import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
 import NavBar from "./NavBar";
+import Footer from "./Footer";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
 import { authClient } from "./lib/auth-client";
@@ -118,6 +119,7 @@ export function Login() {
           </form>
         </Card>
       </div>
+      <Footer/>
     </>
   );
 }

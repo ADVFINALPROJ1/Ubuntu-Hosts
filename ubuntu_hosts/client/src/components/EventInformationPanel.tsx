@@ -8,6 +8,7 @@ import EventDateTime from "./EventDateTime";
 import EventLocation from "./EventLocation";
 import axios from "axios";
 import { authClient } from "../lib/auth-client";
+import { toast} from "sonner";
 
 export interface Event {
   id: number;
@@ -34,7 +35,6 @@ const API: string =
     ? import.meta.env.VITE_PRODUCTION_API
     : import.meta.env.VITE_LOCAL_API;
 
-
 // ── TicketSidebar ────────────────────────────────────────────────────────────
 const TicketSidebar = ({
   price,
@@ -48,7 +48,9 @@ const TicketSidebar = ({
 }) => {
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
-   const { data: session } = authClient.useSession();
+  const { data: session } = authClient.useSession();
+  const userName = session?.user?.name;
+  const userEmail = session?.user?.email;
 
   const isSoldOut = available_capacity === 0;
   const totalPrice = quantity * price;
@@ -60,8 +62,25 @@ const TicketSidebar = ({
     if (quantity > 1) setQuantity((q) => q - 1);
   };
 
-  const handleGetTickets = () => {
+  const handleGetTickets = async () => {
     if (isSoldOut) return;
+
+    if (price === 0) {
+      try {
+        const response = await axios.post(`${API}/events/${eventId}/rsvp`, {
+          name: userName,
+          email: userEmail,
+        });
+        toast.success("Successfully reserved:");
+        navigate('/')
+      } catch (error) {
+        toast.error("Failed to reserve spot");
+      }
+
+      return;
+    }
+
+    // Logic for paid tickets
     navigate(
       `/order-summary?quantity=${quantity}&price=${price}&eventId=${eventId}`,
     );
@@ -148,7 +167,7 @@ const TicketSidebar = ({
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">Total</p>
           <p className="text-lg font-bold">
-            {price === 0 ? "Free" : `ETB ${(totalPrice * 55).toFixed(2)}`}
+            {price === 0 ? "Free" : `ETB ${totalPrice.toFixed(2)}`}
           </p>
         </div>
 

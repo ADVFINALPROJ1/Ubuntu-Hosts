@@ -20,6 +20,7 @@ export function EventGrid({ events }: EventGridProps) {
   const [filters, setFilters] = useState<FilterState>({
     location: "",
     sortOrder: "asc",
+    category:'',
   });
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 

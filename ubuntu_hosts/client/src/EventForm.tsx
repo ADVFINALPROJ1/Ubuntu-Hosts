@@ -6,6 +6,7 @@ import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
 import { toast } from "sonner";
 import NavBar from "./NavBar";
+import Footer from "./Footer";
 
 // ── API base URL ─────────────────────────────────────────────────────────────
 if (!import.meta.env.APP_ENV) {
@@ -436,6 +437,7 @@ export const EventForm = ({ mode }: { mode: "create" | "edit" }) => {
           </CardContent>
         </Card>
       </div>
+      <Footer/>
     </>
   );
 };
