@@ -17,46 +17,51 @@ function NavBar() {
   }
 
   return (
-    <>
       <div className="nav-bar-container">
-        <div className="left_buttons">
-          <Link to="/">
-            <img src="/word_logo_black.png" alt="Logo" className="nav-logo" />
-          </Link>
-          <Button variant="link" size="lg">
-            Events
-          </Button>
-          <Button variant="link" size="lg">
-            Trending
-          </Button>
-          <Button variant="link" size="lg">
-            About
-          </Button>
+      {/* Logo */}
+      <Link to="/">
+        <img src="/word_logo_black.png" alt="Logo" className="nav-logo" />
+      </Link>
+
+      {/* Desktop nav links — hidden on mobile */}
+      <div className="nav-links">
+        <Button variant="link" size="lg">Events</Button>
+        <Button variant="link" size="lg">Trending</Button>
+        <Button variant="link" size="lg">About</Button>
+      </div>
+
+      {/* Right side */}
+      <div className="nav-right">
+        {/* Search — hidden on small screens */}
+        <div className="nav-search">
+          <InputInline />
         </div>
 
-        <div className="right_buttons">
-          <InputInline />
-          {role == "organizer" && (
+        {/* Create button — desktop only */}
+        {role === "organizer" && (
+          <div className="nav-create">
             <Link to="/create-event">
               <Button>
-                <Plus></Plus>
-                Create
+                <Plus /> Create
               </Button>
             </Link>
-          )}
+          </div>
+        )}
 
-          {!session && (
+        {/* Sign In — desktop only */}
+        {!session && (
+          <div className="nav-signin">
             <Link to="/login">
               <Button>Sign In</Button>
             </Link>
-          )}
+          </div>
+        )}
 
           <div className="sidebar-trigger">
             <SideBar children={children} />
           </div>
-        </div>
-      </div>
-    </>
+         </div>
+    </div>
   );
 }
 

@@ -6,6 +6,22 @@ import { CreateEventInput, UpdateEventInput } from './events.schemas'
 import { eventUpdateAlertMail, eventCancellationAlertMail } from '../../lib/email'
 import { desc, asc } from "drizzle-orm"; // Make sure to import these from drizzle
 
+
+const VALID_CATEGORIES = [
+  "CONCERT", "CONFERENCE", "WORKSHOP", "NETWORKING", "FESTIVAL",
+  "SPORTS", "EXHIBITION", "WEBINAR", "SOCIAL_GATHERING", "HACKATHON",
+  "MEETUP", "SEMINAR", "KEYNOTE", "PANEL_DISCUSSION", "JOB_FAIR",
+  "PRODUCT_LAUNCH", "LIVE_MUSIC", "COMEDY_SHOW", "THEATER_ART",
+  "NIGHTLIFE_PARTY", "FOOD_DRINK", "MOVIE_SCREENING", "GAMING_TOURNAMENT",
+  "OTHER",
+] as const;
+
+type EventCategory = typeof VALID_CATEGORIES[number];
+
+function isValidCategory(value: string): value is EventCategory {
+  return (VALID_CATEGORIES as readonly string[]).includes(value);
+}
+
 export const createEvent = async (data: CreateEventInput) => {
   const [newEvent] = await db.insert(events).values({
     title: data.title,
@@ -23,28 +39,39 @@ export const createEvent = async (data: CreateEventInput) => {
   return newEvent;
 };
 
+// change the options type signature
 export const getAllEvents = async (options?: {
   page: number;
   limit: number;
   sortBy: "date" | "location";
   order: "asc" | "desc";
+  category?: string;           // ← add this
 }) => {
   const page = options?.page ?? 1;
   const limit = options?.limit ?? 10;
   const sortBy = options?.sortBy ?? "date";
   const order = options?.order ?? "asc";
+  const category = options?.category;   // ← add this
   const offset = (page - 1) * limit;
 
   const orderColumn = sortBy === "location" ? events.location : events.date;
   const orderByExpression = order === "desc" ? desc(orderColumn) : asc(orderColumn);
 
+  // ← replace the two db calls with these
+  const whereClause =
+  category && isValidCategory(category)
+    ? eq(events.category, category)
+    : undefined;
+
   const [{ count }] = await db
     .select({ count: sql<number>`count(*)` })
-    .from(events);
+    .from(events)
+    .where(whereClause);
 
   const rows = await db
     .select()
     .from(events)
+    .where(whereClause)
     .orderBy(orderByExpression)
     .limit(limit)
     .offset(offset);
