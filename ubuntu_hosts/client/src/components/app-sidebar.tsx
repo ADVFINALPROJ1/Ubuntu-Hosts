@@ -39,7 +39,7 @@ const Events = [
 ];
 
 export function AppSidebar() {
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session,isPending } = authClient.useSession();
 
   const navigate = useNavigate();
 
@@ -57,10 +57,9 @@ export function AppSidebar() {
           alert(ctx.error.message || "Failed to log out.");
         },
       },
-    });
-  };
+    })};
 
-  if (isPending) {
+    if (isPending) {
     return (
       <div className="flex h-screen items-center justify-center">
         <p className="text-gray-500">Verifying session...</p>
@@ -68,94 +67,103 @@ export function AppSidebar() {
     );
   }
 
-  return (
-    <>
-      <Toaster />
-      <Sidebar>
-        <SidebarHeader>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              {session && session.user && (
-                <>
-                  <div style={{ display: "flex", justifyContent: "left", gap: "10px" }}>
-                    <Avatar>
-                      <AvatarImage src="https://github.com/shadcnf.png" />
-                      <AvatarFallback>{session.user.name?.[0]?.toUpperCase() ?? "U"}</AvatarFallback>
-                    </Avatar>
-                    <div style={{ display: "block", flexDirection: "row" }}>
-                      <Badge variant="ghost">{session.user.name || "Couldn't fetch name"}</Badge>
-                      <div></div>
-                      <Badge variant="outline">{session.user.email || "Couldn't fetch email"}</Badge>
+    return (
+      <>
+        <Toaster />
+        <Sidebar>
+          {/* Sidebar Header */}
+          <SidebarHeader>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                {session && (
+                  <>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "left",
+                        gap: "10px",
+                      }}
+                    >
+                      <Avatar>
+                        <AvatarImage src="https://github.com/shadcnf.png" />
+                        <AvatarFallback>{session.user.name?.[0]?.toUpperCase() ?? "U"}</AvatarFallback>
+                      </Avatar>
+                      <div style={{ display: "block", flexDirection: "row" }}>
+                        <Badge variant="ghost">{session?.user.name || "Couldn't fetch name"}</Badge>
+                        <div></div>
+                        <Badge variant="outline">{session?.user.email || "Couldn't fetch email"}</Badge>
+                      </div>
                     </div>
-                  </div>
-                </>
-              )}
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarHeader>
+                  </>
+                )}
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarHeader>
 
-        <Separator />
+          <Separator />
 
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupLabel>Create an Event</SidebarGroupLabel>
-            <Separator />
-            <div style={{ margin: "10px" }}>
-              <Link to="/dashboard">
-                <div style={{ display: "flex", gap: "10px" }}>
-                  <LayoutDashboard />Dashboard
-                </div>
-              </Link>
-            </div>
-            <Separator />
-            <SidebarGroupAction asChild>
-              <Link to="/create-event">
-                <Plus /> <span className="sr-only">Add Project</span>
-              </Link>
-            </SidebarGroupAction>
-            <SidebarGroupContent></SidebarGroupContent>
-          </SidebarGroup>
-
-          <Collapsible defaultOpen className="group/collapsible">
+          {/* Sidebar Content */}
+          <SidebarContent>
             <SidebarGroup>
-              <SidebarGroupLabel asChild>
-                <CollapsibleTrigger>
-                  Help
-                  <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
-                </CollapsibleTrigger>
-              </SidebarGroupLabel>
-              <CollapsibleContent>
-                <SidebarGroupContent />
-              </CollapsibleContent>
+              <SidebarGroupLabel>Create an Event</SidebarGroupLabel>
+              
+          <Separator />
+          <div style={{'margin':'10px'}}>
+              <Link to="/dashboard">
+              <div style={{'display':'flex','gap':'10px'}}><LayoutDashboard />Dashboard</div></Link>
+              </div>
+          <Separator />
+              <SidebarGroupAction asChild>
+                  <Link to="/create-event">
+                    <Plus /> <span className="sr-only">Add Project</span>
+                  </Link>
+                </SidebarGroupAction>
+              <SidebarGroupContent></SidebarGroupContent>
             </SidebarGroup>
-          </Collapsible>
 
-          <SidebarMenu>
-            {Events.map((event) => (
-              <SidebarMenuItem key={event?.name}>
-                <SidebarMenuButton asChild>
-                  <a href={event?.url}>
-                    <event.icon />
-                    <span>{event?.name}</span>
-                  </a>
+            <Collapsible defaultOpen className="group/collapsible">
+              <SidebarGroup>
+                <SidebarGroupLabel asChild>
+                  <CollapsibleTrigger>
+                    Help
+                    <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                  </CollapsibleTrigger>
+                </SidebarGroupLabel>
+                <CollapsibleContent>
+                  <SidebarGroupContent />
+                </CollapsibleContent>
+              </SidebarGroup>
+            </Collapsible>
+
+            <SidebarMenu>
+              {Events.map((event) => (
+                <SidebarMenuItem key={event?.name}>
+                  <SidebarMenuButton asChild>
+                    <a href={event?.url}>
+                      <event.icon />
+                      <span>{event?.name}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarContent>
+
+          {/* // Sidebar Footer */}
+          <SidebarFooter>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  style={{ display: "flex", justifyContent: "right" }}
+                >
+                  <Button onClick={handleLogout} variant="destructive">
+                    Logout
+                  </Button>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarContent>
-
-        <SidebarFooter>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <div style={{ display: "flex", justifyContent: "flex-end", padding: "0.5rem" }}>
-                <Button onClick={handleLogout} variant="destructive">
-                  Logout
-                </Button>
-              </div>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarFooter>
-      </Sidebar>
-    </>
-  );
-};
+            </SidebarMenu>
+          </SidebarFooter>
+        </Sidebar>
+      </>
+    );
+  };
