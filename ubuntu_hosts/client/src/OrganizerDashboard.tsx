@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-
   Table,
   TableBody,
   TableCell,
@@ -17,6 +16,8 @@ import { toast } from "sonner";
 import { AttendeesModal } from "./components/AttendeesModal";
 import { FilterBar, type FilterState } from "./components/ui/FilterBar";
 import { useMemo } from "react";
+import NavBar from "./NavBar";
+import Footer from "./Footer";
 
 interface Attendee {
   id: string;
@@ -37,35 +38,46 @@ interface Event {
   attendees: Attendee[];
 }
 
-const API = "https://ubuntu-hosts-5zts.onrender.com";
+if (!import.meta.env.APP_ENV) {
+  throw new Error("There is no APP_ENV in your env file!");
+}
+
+const API: string =
+  import.meta.env.APP_ENV === "production"
+    ? import.meta.env.VITE_PRODUCTION_API
+    : import.meta.env.VITE_LOCAL_API;
 
 export const OrganizerDashboard = () => {
   const [events, setEvents] = useState<Event[]>([]);
- const [loading, setLoading] = useState(true);
-const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-const [filters, setFilters] = useState<FilterState>({ location: "", sortOrder: "asc" });
-const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [filters, setFilters] = useState<FilterState>({
+    location: "",
+    sortOrder: "asc",
+    category: "",
+  });
+  const navigate = useNavigate();
 
   // Fetch all events on load
   useEffect(() => {
     fetchEvents();
   }, []);
-const locations = useMemo(
-  () => Array.from(new Set(events.map((e) => e.location))).sort(),
-  [events]
-);
+  const locations = useMemo(
+    () => Array.from(new Set(events.map((e) => e.location))).sort(),
+    [events],
+  );
 
-const filteredEvents = useMemo(() => {
-  let result = [...events];
-  if (filters.location) {
-    result = result.filter((e) => e.location === filters.location);
-  }
-  result.sort((a, b) => {
-    const diff = new Date(a.date).getTime() - new Date(b.date).getTime();
-    return filters.sortOrder === "asc" ? diff : -diff;
-  });
-  return result;
-}, [events, filters]);
+  const filteredEvents = useMemo(() => {
+    let result = [...events];
+    if (filters.location) {
+      result = result.filter((e) => e.location === filters.location);
+    }
+    result.sort((a, b) => {
+      const diff = new Date(a.date).getTime() - new Date(b.date).getTime();
+      return filters.sortOrder === "asc" ? diff : -diff;
+    });
+    return result;
+  }, [events, filters]);
   const fetchEvents = async () => {
     try {
       const res = await fetch(`${API}/events`);
@@ -116,160 +128,210 @@ const filteredEvents = useMemo(() => {
   };
 
   return (
+    <>
+    <NavBar/>
     <div style={{ fontFamily: "Arial, sans-serif" }}>
-  <AttendeesModal
-    open={!!selectedEvent}
-    onClose={() => setSelectedEvent(null)}
-    event={selectedEvent ? {
-      id: String(selectedEvent.id),
-      title: selectedEvent.title,
-      attendees: selectedEvent.attendees ?? [],
-    } : null}
-  />
+      <AttendeesModal
+        open={!!selectedEvent}
+        onClose={() => setSelectedEvent(null)}
+        event={
+          selectedEvent
+            ? {
+                id: String(selectedEvent.id),
+                title: selectedEvent.title,
+                attendees: selectedEvent.attendees ?? [],
+              }
+            : null
+        }
+      />
 
-  <FilterBar
-    locations={locations}
-    filters={filters}
-    onFilterChange={setFilters}
-  />
+      <FilterBar
+        locations={locations}
+        filters={filters}
+        onFilterChange={setFilters}
+      />
 
-  <div style={{ padding: "2rem" }}>
-      {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
-        <div>
-          <h1 style={{ fontSize: "2rem", fontWeight: "900", margin: 0 }}>
-            Organizer Dashboard
-          </h1>
-          <p style={{ color: "#666", marginTop: "0.25rem" }}>
-            Manage your events
-          </p>
-        </div>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          <Button onClick={() => navigate("/create-event")}>
-            + Create Event
-          </Button>
-          <Button variant="outline" onClick={handleLogout}>
-            <LogOut size={16} style={{ marginRight: "0.5rem" }} />
-            Log Out
-          </Button>
-        </div>
-      </div>
-
-      {/* Stats Card */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem", marginBottom: "2rem" }}>
-        <Card>
-          <CardHeader>
-            <CardTitle style={{ fontSize: "0.875rem", color: "#666" }}>Total Events</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p style={{ fontSize: "2rem", fontWeight: "bold" }}>{events.length}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle style={{ fontSize: "0.875rem", color: "#666" }}>Active Events</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p style={{ fontSize: "2rem", fontWeight: "bold", color: "green" }}>
-              {events.filter((e) => getStatus(e) === "Active").length}
+      <div style={{ padding: "2rem" }}>
+        {/* Header */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "2rem",
+          }}
+        >
+          <div>
+            <h1 style={{ fontSize: "2rem", fontWeight: "900", margin: 0 }}>
+              Organizer Dashboard
+            </h1>
+            <p style={{ color: "#666", marginTop: "0.25rem" }}>
+              Manage your events
             </p>
-          </CardContent>
-        </Card>
+          </div>
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <Button onClick={() => navigate("/create-event")}>
+              + Create Event
+            </Button>
+            <Button variant="outline" onClick={handleLogout}>
+              <LogOut size={16} style={{ marginRight: "0.5rem" }} />
+              Log Out
+            </Button>
+          </div>
+        </div>
+
+        {/* Stats Card */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: "1rem",
+            marginBottom: "2rem",
+          }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle style={{ fontSize: "0.875rem", color: "#666" }}>
+                Total Events
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p style={{ fontSize: "2rem", fontWeight: "bold" }}>
+                {events.length}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle style={{ fontSize: "0.875rem", color: "#666" }}>
+                Active Events
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p
+                style={{ fontSize: "2rem", fontWeight: "bold", color: "green" }}
+              >
+                {events.filter((e) => getStatus(e) === "Active").length}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle style={{ fontSize: "0.875rem", color: "#666" }}>
+                Sold Out
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p style={{ fontSize: "2rem", fontWeight: "bold", color: "red" }}>
+                {events.filter((e) => getStatus(e) === "Sold Out").length}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Events Table */}
         <Card>
           <CardHeader>
-            <CardTitle style={{ fontSize: "0.875rem", color: "#666" }}>Sold Out</CardTitle>
+            <CardTitle>My Events</CardTitle>
           </CardHeader>
           <CardContent>
-            <p style={{ fontSize: "2rem", fontWeight: "bold", color: "red" }}>
-              {events.filter((e) => getStatus(e) === "Sold Out").length}
-            </p>
+            {loading ? (
+              <p style={{ textAlign: "center", color: "#666" }}>
+                Loading events...
+              </p>
+            ) : events.length === 0 ? (
+              <p style={{ textAlign: "center", color: "#666" }}>
+                No events found. Create your first event.
+              </p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Title</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Time</TableHead>
+                    <TableHead>Location</TableHead>
+                    <TableHead>Capacity</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredEvents.map((event) => {
+                    const status = getStatus(event);
+                    return (
+                      <TableRow key={event.id}>
+                        <TableCell style={{ fontWeight: "bold" }}>
+                          {event.title}
+                        </TableCell>
+                        <TableCell>{event.date}</TableCell>
+                        <TableCell>{event.time}</TableCell>
+                        <TableCell>{event.location}</TableCell>
+                        <TableCell>
+                          {event.available_capacity} / {event.capacity}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            style={{
+                              backgroundColor:
+                                status === "Active" ? "#16a34a" : "#dc2626",
+                              color: "white",
+                            }}
+                          >
+                            {status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div style={{ display: "flex", gap: "0.5rem" }}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                navigate(`/edit-event/${event.id}`)
+                              }
+                            >
+                              <Pencil
+                                size={14}
+                                style={{ marginRight: "0.25rem" }}
+                              />
+                              Edit
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setSelectedEvent(event)}
+                            >
+                              <Users
+                                size={14}
+                                style={{ marginRight: "0.25rem" }}
+                              />
+                              View Attendees
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleDelete(event.id)}
+                            >
+                              <Trash2
+                                size={14}
+                                style={{ marginRight: "0.25rem" }}
+                              />
+                              Delete
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            )}
           </CardContent>
         </Card>
       </div>
-
-      {/* Events Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>My Events</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <p style={{ textAlign: "center", color: "#666" }}>Loading events...</p>
-          ) : events.length === 0 ? (
-            <p style={{ textAlign: "center", color: "#666" }}>No events found. Create your first event.</p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Time</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Capacity</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-  {filteredEvents.map((event) => {
-    const status = getStatus(event);
-    return (
-      <TableRow key={event.id}>
-                      <TableCell style={{ fontWeight: "bold" }}>{event.title}</TableCell>
-                      <TableCell>{event.date}</TableCell>
-                      <TableCell>{event.time}</TableCell>
-                      <TableCell>{event.location}</TableCell>
-                      <TableCell>
-                        {event.available_capacity} / {event.capacity}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          style={{
-                            backgroundColor: status === "Active" ? "#16a34a" : "#dc2626",
-                            color: "white",
-                          }}
-                        >
-                          {status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div style={{ display: "flex", gap: "0.5rem" }}>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => navigate(`/edit-event/${event.id}`)}
-                          >
-                            <Pencil size={14} style={{ marginRight: "0.25rem" }} />
-                            Edit
-                          </Button>
-                          <Button
-    variant="outline"
-  size="sm"
-  onClick={() => setSelectedEvent(event)}
->
-  <Users size={14} style={{ marginRight: "0.25rem" }} />
-  View Attendees
-</Button>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleDelete(event.id)}
-                          >
-                            <Trash2 size={14} style={{ marginRight: "0.25rem" }} />
-                            Delete
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
-   </div>
     </div>
+    <Footer/>
+    </>
   );
 };
 

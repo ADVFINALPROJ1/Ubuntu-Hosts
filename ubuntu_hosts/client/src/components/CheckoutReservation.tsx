@@ -4,6 +4,7 @@ import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import Navbar from "../NavBar";
+import Footer from "../Footer";
 
 const CheckoutReservation = () => {
   const navigate = useNavigate();
@@ -307,6 +308,7 @@ const CheckoutReservation = () => {
         </div>
       </div>
     </div>
+    <Footer/>
     </>
   );
 };

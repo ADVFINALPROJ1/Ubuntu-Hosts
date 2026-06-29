@@ -1,5 +1,6 @@
 import CheckoutReservation from "./CheckoutReservation";
 import Navbar from "../NavBar";
+import Footer from "../Footer";
 
 function CheckoutPage() {
   return (
@@ -8,6 +9,7 @@ function CheckoutPage() {
     <div className="container mx-auto py-10">
       <CheckoutReservation />
     </div>
+    <Footer/>
     </>
   );
 }

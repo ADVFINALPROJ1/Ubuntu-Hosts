@@ -25,6 +25,7 @@ function App() {
   const [filters, setFilters] = useState<FilterState>({
     location: "",
     sortOrder: "asc",
+    category:"",
   });
   const [locations, setLocations] = useState<string[]>([]);
 

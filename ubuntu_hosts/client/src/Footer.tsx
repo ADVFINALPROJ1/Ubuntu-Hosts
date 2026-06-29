@@ -25,9 +25,9 @@ const FOOTER_LINKS = {
 };
 
 const SOCIAL_LINKS = [
-  { label: "Twitter", href: "https://twitter.com" },
-  { label: "Instagram", href: "https://instagram.com" },
-  { label: "LinkedIn", href: "https://linkedin.com" },
+  { label: "Twitter", href: "/" },
+  { label: "Instagram", href: "/" },
+  { label: "LinkedIn", href: "/" },
 ];
 
 function Footer() {
@@ -167,7 +167,7 @@ function Footer() {
           }}
         >
           <p style={{ fontSize: "0.78rem", color: "var(--muted-foreground)" }}>
-            © {currentYear} EventApp. All rights reserved.
+            © {currentYear} Ubuntu Hosts. All rights reserved.
           </p>
           <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
             <Link

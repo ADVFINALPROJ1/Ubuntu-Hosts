@@ -11,6 +11,7 @@ import {
 import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
 import NavBar from "./NavBar";
+import Footer from "./Footer";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
@@ -144,6 +145,7 @@ export function SignUp() {
           </form>
         </Card>
       </div>
+      <Footer/>
     </>
   );
 }
