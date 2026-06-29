@@ -25,9 +25,10 @@ eventRoutes.get("/", async (c) => {
       
   const sortBy = (c.req.query("sortBy") ?? "date") as "date" | "location";
   const order = (c.req.query("order") ?? "asc") as "asc" | "desc";
+  const category = c.req.query("category") ?? "";
 
   // FIX: getAllEvents returns an array, so we fetch it directly here
- const { events, total } = await getAllEvents({ page, limit, sortBy, order });
+ const { events, total } = await getAllEvents({ page, limit, sortBy, order, ...(category ? { category } : {}) });
 
   const totalPages = Math.ceil(total / limit);
 

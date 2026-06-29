@@ -72,6 +72,7 @@ function App() {
             sortBy="date"
             order={filters.sortOrder}
             location={filters.location}
+            category={filters.category} 
           />
         )}
       </section>

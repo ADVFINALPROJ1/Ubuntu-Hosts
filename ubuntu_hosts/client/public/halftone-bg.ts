@@ -25,7 +25,7 @@ export function initHalftoneBg(
     spacing = 28,
     maxRadius = 7,
     minRadius = 1.2,
-    speed = 0.1,
+    speed = 0.085,
     mode = "diagonal",
   } = options;
 
