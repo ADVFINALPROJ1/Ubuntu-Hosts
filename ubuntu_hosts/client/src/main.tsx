@@ -6,19 +6,20 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Login } from "./Login";
 import { SignUp } from "./SignUp";
 import EventDetails from "./EventDetails";
-import { TableComponent } from "./TableComponent";
 import OrganizerDashboard from "./OrganizerDashboard";
 import EventForm from "./EventForm";
 import PaymentRedirect from "./PaymentRedirect";
 import CheckoutReservation from "./components/CheckoutReservation";
 import OrderSummaryPage from "./components/OrderSummaryPage";
+import { Toaster } from "sonner";
+import UserDashboard from "./UserDashboard";
 
 const route = createBrowserRouter([
   { path: "/", element: <App /> },
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <SignUp /> },
   { path: "/details/:id", element: <EventDetails/> },
-  { path: "/view-dashboard", element: <TableComponent /> },
+  { path: "/view-dashboard", element: <UserDashboard /> },
   { path: "/dashboard", element: <OrganizerDashboard /> },
   { path: "/create-event", element: <EventForm mode="create" /> },
   { path: "/edit-event/:id", element: <EventForm mode="edit" /> },
@@ -29,6 +30,7 @@ const route = createBrowserRouter([
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
+    <Toaster/>
     <RouterProvider router={route} />
   </StrictMode>,
 );

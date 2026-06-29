@@ -23,7 +23,7 @@ import {
 import { Separator } from "./ui/separator";
 import { Link, useNavigate } from "react-router-dom";
 import { authClient } from "../lib/auth-client";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 
 export function AppSidebar() {
   const { data: session, isPending } = authClient.useSession();
@@ -58,7 +58,6 @@ export function AppSidebar() {
 
   return (
     <>
-      <Toaster />
       <Sidebar>
         {/* Sidebar Header */}
         <SidebarHeader>

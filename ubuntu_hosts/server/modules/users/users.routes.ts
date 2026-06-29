@@ -6,7 +6,9 @@ import {
   getAttendeesByEventId,
   isEventSoldOut,
   getEventAvailability,
+  getEventsByAttendeeEmail,
 } from './users.services'
+import { isNull } from 'drizzle-orm'
 
 const usersRoute = new Hono()
 
@@ -97,6 +99,17 @@ usersRoute.get('/events/:id/attendees/export', async (c) => {
     'Content-Type': 'text/csv',
     'Content-Disposition': `attachment; filename="attendees-event-${eventId}.csv"`,
   })
+})
+
+usersRoute.get('/events/user/:email', async (c) => {
+  const userEmail = c.req.param('email')
+
+  const events = await getEventsByAttendeeEmail(userEmail)
+  if (!events) {
+    return c.json({ "message": 'No events found :(' }, 200)
+  }
+
+  return c.json(events)
 })
 
 export default usersRoute
