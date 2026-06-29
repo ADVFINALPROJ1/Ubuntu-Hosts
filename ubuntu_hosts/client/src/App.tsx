@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { FilterBar, type FilterState } from "./components/ui/FilterBar";
 import HeroSection from './HeroSection'
+import Footer from './Footer'
 
 
 // ── API base URL ─────────────────────────────────────────────────────────────
@@ -76,6 +77,8 @@ function App() {
           />
         )}
       </section>
+
+      <Footer />
     </>
   );
 }
