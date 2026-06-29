@@ -26,21 +26,21 @@ export interface Event {
 }
 
 // ── API base URL ─────────────────────────────────────────────────────────────
-// try{
-//   console.log("APP_ENV is currently:", import.meta.env.APP_ENV);
+try{
+  console.log("APP_ENV is currently:", import.meta.env.APP_ENV);
   
-// }catch(Error){
-//  console.log("I couldn't access the APP_ENV")
-// }
+}catch(Error){
+ console.log("I couldn't access the APP_ENV")
+}
 
-// if (!import.meta.env.APP_ENV) {
-//   throw new Error("There is no APP_ENV in your env file!");
-// }
+if (!import.meta.env.APP_ENV) {
+  throw new Error("There is no APP_ENV in your env file!");
+}
 
-// const API: string =
-//   import.meta.env.APP_ENV === "production"
-//     ? import.meta.env.VITE_PRODUCTION_API
-//     : import.meta.env.VITE_LOCAL_API;
+const API: string =
+  import.meta.env.APP_ENV === "production"
+    ? import.meta.env.VITE_PRODUCTION_API
+    : import.meta.env.VITE_LOCAL_API;
 
 
 
@@ -128,7 +128,7 @@ export function EventList({
   useEffect(() => {
     setLoading(true);
     axios
-      .get<{ events: Event[] }>("https://ubuntu-hosts-5zts.onrender.com/events?limit=100") 
+      .get<{ events: Event[] }>(`${API}/events?limit=100`) 
       .then((res) => setEvents(res.data.events))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));

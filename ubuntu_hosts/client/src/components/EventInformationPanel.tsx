@@ -235,7 +235,7 @@ const EventInformationPanel = () => {
           {/* Banner */}
           <div className="overflow-hidden rounded-xl">
             <img
-              src={event.imageUrl || "../public/event_cover.jpg"}
+              src={event.imageUrl || "/event_cover.jpg"}
               alt="Event Banner"
               className="w-full object-cover"
               style={{ maxHeight: "420px" }}
