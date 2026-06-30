@@ -46,7 +46,7 @@ function App() {
 
       <HeroSection />
 
-      <section className="skeleton-container" style={{ padding: "1rem" }}>
+      <section id="trending" className="skeleton-container" style={{ padding: "1rem" }}>
         <h1
           style={{
             textAlign: "center",
