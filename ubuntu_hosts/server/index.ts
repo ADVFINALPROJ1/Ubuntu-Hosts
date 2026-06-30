@@ -15,6 +15,28 @@ if (!process.env.CORS_ORIGIN) {
   throw new Error("FATAL ERROR: CORS_ORIGIN environment variable is not defined.");
 }
 
+// ─── Chapa API Key Isolation ───────────────────────────────────────────────
+// Credentials must be loaded entirely from .env. The server must refuse to
+// start and log an explicit error if either key is missing, so no live key
+// is ever hardcoded into the repository as a fallback.
+if (!process.env.CHAPA_SECRET_KEY) {
+  console.error(
+    "FATAL ERROR: CHAPA_SECRET_KEY environment variable is not defined.\n" +
+    "Add it to your .env file. See .env.example for the template."
+  );
+  throw new Error("FATAL ERROR: CHAPA_SECRET_KEY environment variable is not defined.");
+}
+
+if (!process.env.CHAPA_PUBLIC_KEY) {
+  console.error(
+    "FATAL ERROR: CHAPA_PUBLIC_KEY environment variable is not defined.\n" +
+    "Add it to your .env file. See .env.example for the template."
+  );
+  throw new Error("FATAL ERROR: CHAPA_PUBLIC_KEY environment variable is not defined.");
+}
+
+console.log("✅ Chapa API keys loaded successfully from environment.");
+
 const allowedOrigins = process.env.CORS_ORIGIN;
 
 /** * CORS Configuration 
@@ -68,4 +90,3 @@ export default {
   port: Number(process.env.PORT) || 3000,
   hostname: '0.0.0.0'
 }
-
