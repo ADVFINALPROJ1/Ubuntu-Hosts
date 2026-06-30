@@ -91,22 +91,26 @@ export async function registerAttendee(
     .set({ available_capacity: sql`${events.available_capacity} - 1` })
     .where(eq(events.id, eventId));
 
-  // Send confirmation email
-  try {
-    const event = await getEventById(eventId);
-    if (event) {
-      await registrationConfirmationMail({
-        to: newAttendee.email,
-        name: newAttendee.name,
-        eventTitle: event.title,
-        eventDate: event.date,
-        eventTime: event.time,
-        eventLocation: event.location,
-        attendeeId: newAttendee.id,
-      });
+  const APP_MODE = process.env.APP_ENV;
+
+  if (APP_MODE === "development") {
+    // Send confirmation email
+    try {
+      const event = await getEventById(eventId);
+      if (event) {
+        await registrationConfirmationMail({
+          to: newAttendee.email,
+          name: newAttendee.name,
+          eventTitle: event.title,
+          eventDate: event.date,
+          eventTime: event.time,
+          eventLocation: event.location,
+          attendeeId: newAttendee.id,
+        });
+      }
+    } catch (emailError) {
+      console.error("Failed to send confirmation email:", emailError);
     }
-  } catch (emailError) {
-    console.error("Failed to send confirmation email:", emailError);
   }
 
   return {
