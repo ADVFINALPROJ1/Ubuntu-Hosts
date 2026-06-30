@@ -11,6 +11,8 @@ type EmailParams = {
 function createTransporter() {
   const config = {
     service: "gmail",
+    port: 587,
+    secure: false,
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
@@ -134,7 +136,7 @@ Ubuntu Hosts Team`;
     </html>
   `;
 
-   const transporter = createTransporter();
+  const transporter = createTransporter();
 
   const message = {
     from: process.env.SMTP_USER,
