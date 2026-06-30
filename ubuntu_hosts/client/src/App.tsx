@@ -2,7 +2,7 @@ import "./App.css";
 import { SkeletonContainer } from "./CardSkeleton";
 import { EventList } from "./components/ui/EventCard";
 import NavBar from "./NavBar";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { FilterBar, type FilterState } from "./components/ui/FilterBar";
 import HeroSection from './HeroSection'

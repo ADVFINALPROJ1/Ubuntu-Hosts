@@ -70,24 +70,26 @@ export async function registerAttendee(
   eventTitle: string,
   input: RSVPInput,
 ): Promise<RSVPConfirmation> {
-  const [newAttendee] = await db.transaction(async (tx) => {
-    const inserted = await tx
-      .insert(attendees)
-      .values({
-        event_id: eventId,
-        name: input.name.trim(),
-        email: input.email.trim().toLowerCase(),
-        status: "Registered",
-      })
-      .returning();
+  // Re-check availability right before inserting to reduce (not eliminate) race conditions
+  const currentEvent = await getEventForRSVP(eventId);
+  if (isEventSoldOut(currentEvent)) {
+    throw new Error("Event is sold out");
+  }
 
-    await tx
-      .update(events)
-      .set({ available_capacity: sql`${events.available_capacity} - 1` })
-      .where(eq(events.id, eventId));
+  const [newAttendee] = await db
+    .insert(attendees)
+    .values({
+      event_id: eventId,
+      name: input.name.trim(),
+      email: input.email.trim().toLowerCase(),
+      status: "Registered",
+    })
+    .returning();
 
-    return inserted;
-  });
+  await db
+    .update(events)
+    .set({ available_capacity: sql`${events.available_capacity} - 1` })
+    .where(eq(events.id, eventId));
 
   // Send confirmation email
   try {
