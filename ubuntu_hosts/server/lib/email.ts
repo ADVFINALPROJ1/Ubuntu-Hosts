@@ -1,26 +1,26 @@
 /** Mail Services */
-import nodemailer from "nodemailer"
+import nodemailer from "nodemailer";
 
 type EmailParams = {
-    to: string
-    subject: string
-    text: string
-    html?: string
-}
+  to: string;
+  subject: string;
+  text: string;
+  html?: string;
+};
 
 function createTransporter() {
   const config = {
-    service: 'gmail',
+    service: "gmail",
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
     },
-  }
-  return nodemailer.createTransport(config)
+  };
+  return nodemailer.createTransport(config);
 }
 
 export async function sendMail({ to, subject, text, html }: EmailParams) {
-  const transporter = createTransporter()
+  const transporter = createTransporter();
 
   const message = {
     from: process.env.SMTP_USER,
@@ -28,42 +28,46 @@ export async function sendMail({ to, subject, text, html }: EmailParams) {
     subject,
     text,
     html,
-  }
+  };
 
   try {
-    await transporter.sendMail(message)
-    console.log(`Email sent to ${to}: ${subject}`)
+    await transporter.sendMail(message);
+    console.log(`Email sent to ${to}: ${subject}`);
   } catch (error) {
-    console.error("Error sending email:", error)
-    throw error
+    console.error("Error sending email:", error);
+    throw error;
   }
 }
 
-export async function accountVerificationMail({ to, subject, text }: EmailParams) {
-  await sendMail({ to, subject, text })
+export async function accountVerificationMail({
+  to,
+  subject,
+  text,
+}: EmailParams) {
+  await sendMail({ to, subject, text });
 }
 
-export async function registrationConfirmationMail({ 
-  to, 
-  name, 
-  eventTitle, 
-  eventDate, 
-  eventTime, 
+export async function registrationConfirmationMail({
+  to,
+  name,
+  eventTitle,
+  eventDate,
+  eventTime,
   eventLocation,
-  attendeeId 
+  attendeeId,
 }: {
-  to: string
-  name: string
-  eventTitle: string
-  eventDate: string
-  eventTime: string
-  eventLocation: string
-  attendeeId: number
+  to: string;
+  name: string;
+  eventTitle: string;
+  eventDate: string;
+  eventTime: string;
+  eventLocation: string;
+  attendeeId: number;
 }) {
-  const subject = `Registration Confirmed: ${eventTitle}`
+  const subject = `Registration Confirmed: ${eventTitle}`;
   const text = `Hi ${name},
 
-Your registration for "${eventTitle}" has been confirmed!
+ Your registration for "${eventTitle}" has been confirmed!
 
 Event Details:
 - Date: ${eventDate}
@@ -74,7 +78,7 @@ Event Details:
 We look forward to seeing you there!
 
 Best regards,
-Ubuntu Hosts Team`
+Ubuntu Hosts Team`;
 
   const html = `
     <!DOCTYPE html>
@@ -128,48 +132,65 @@ Ubuntu Hosts Team`
       </div>
     </body>
     </html>
-  `
+  `;
 
-  await sendMail({ to, subject, text, html })
+   const transporter = createTransporter();
+
+  const message = {
+    from: process.env.SMTP_USER,
+    to,
+    subject,
+    text,
+    html,
+  };
+
+  try {
+    await transporter.sendMail(message);
+    console.log(`Email sent to ${to}: ${subject}`);
+  } catch (error) {
+    console.error("Error sending event confirmation email:", error);
+    throw error;
+  }
 }
 
-export async function eventUpdateAlertMail({ 
-  to, 
-  name, 
-  eventTitle, 
-  oldDate, 
-  newDate, 
-  oldTime, 
-  newTime, 
-  oldLocation, 
+export async function eventUpdateAlertMail({
+  to,
+  name,
+  eventTitle,
+  oldDate,
+  newDate,
+  oldTime,
+  newTime,
+  oldLocation,
   newLocation,
 }: {
-  to: string
-  name: string
-  eventTitle: string
-  oldDate: string
-  newDate: string
-  oldTime: string
-  newTime: string
-  oldLocation: string
-  newLocation: string
+  to: string;
+  name: string;
+  eventTitle: string;
+  oldDate: string;
+  newDate: string;
+  oldTime: string;
+  newTime: string;
+  oldLocation: string;
+  newLocation: string;
 }) {
-  const subject = `Event Updated: ${eventTitle}`
-  const changes: string[] = []
-  if (oldDate !== newDate) changes.push(`Date: ${oldDate} → ${newDate}`)
-  if (oldTime !== newTime) changes.push(`Time: ${oldTime} → ${newTime}`)
-  if (oldLocation !== newLocation) changes.push(`Location: ${oldLocation} → ${newLocation}`)
-  
+  const subject = `Event Updated: ${eventTitle}`;
+  const changes: string[] = [];
+  if (oldDate !== newDate) changes.push(`Date: ${oldDate} → ${newDate}`);
+  if (oldTime !== newTime) changes.push(`Time: ${oldTime} → ${newTime}`);
+  if (oldLocation !== newLocation)
+    changes.push(`Location: ${oldLocation} → ${newLocation}`);
+
   const text = `Hi ${name},
 
 The event "${eventTitle}" has been updated with the following changes:
 
-${changes.map(c => `- ${c}`).join('\n')}
+${changes.map((c) => `- ${c}`).join("\n")}
 
 Please update your calendar accordingly.
 
 Best regards,
-Ubuntu Hosts Team`
+Ubuntu Hosts Team`;
 
   const html = `
     <!DOCTYPE html>
@@ -195,7 +216,7 @@ Ubuntu Hosts Team`
         <p>The event <strong>"${eventTitle}"</strong> has been updated with the following changes:</p>
         
         <div class="details">
-          ${changes.map(c => `<div class="change-row">${c}</div>`).join('')}
+          ${changes.map((c) => `<div class="change-row">${c}</div>`).join("")}
         </div>
         
         <p>Please update your calendar accordingly.</p>
@@ -206,27 +227,27 @@ Ubuntu Hosts Team`
       </div>
     </body>
     </html>
-  `
+  `;
 
-  await sendMail({ to, subject, text, html })
+  await sendMail({ to, subject, text, html });
 }
 
-export async function eventCancellationAlertMail({ 
-  to, 
-  name, 
-  eventTitle, 
-  eventDate, 
-  eventTime, 
+export async function eventCancellationAlertMail({
+  to,
+  name,
+  eventTitle,
+  eventDate,
+  eventTime,
   eventLocation,
 }: {
-  to: string
-  name: string
-  eventTitle: string
-  eventDate: string
-  eventTime: string
-  eventLocation: string
+  to: string;
+  name: string;
+  eventTitle: string;
+  eventDate: string;
+  eventTime: string;
+  eventLocation: string;
 }) {
-  const subject = `Event Cancelled: ${eventTitle}`
+  const subject = `Event Cancelled: ${eventTitle}`;
   const text = `Hi ${name},
 
 We regret to inform you that the event "${eventTitle}" has been cancelled.
@@ -239,7 +260,7 @@ Event Details:
 We apologize for any inconvenience this may cause.
 
 Best regards,
-Ubuntu Hosts Team`
+Ubuntu Hosts Team`;
 
   const html = `
     <!DOCTYPE html>
@@ -289,7 +310,7 @@ Ubuntu Hosts Team`
       </div>
     </body>
     </html>
-  `
+  `;
 
-  await sendMail({ to, subject, text, html })
+  await sendMail({ to, subject, text, html });
 }
