@@ -25,9 +25,18 @@ function NavBar() {
 
       {/* Desktop nav links — hidden on mobile */}
       <div className="nav-links">
+        <Link to="/events">
         <Button variant="link" size="lg">Events</Button>
+        </Link>
+
+        <a href="/#trending">
         <Button variant="link" size="lg">Trending</Button>
+        </a>
+
+        <Link to="/about">
+        
         <Button variant="link" size="lg">About</Button>
+        </Link>
       </div>
 
       {/* Right side */}

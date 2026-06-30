@@ -75,6 +75,7 @@ const TicketSidebar = ({
         navigate('/')
       } catch (error) {
         toast.error("Failed to reserve spot");
+        console.error(error)
       }
 
       return;

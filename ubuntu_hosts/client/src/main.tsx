@@ -13,6 +13,8 @@ import CheckoutReservation from "./components/CheckoutReservation";
 import OrderSummaryPage from "./components/OrderSummaryPage";
 import { Toaster } from "sonner";
 import UserDashboard from "./UserDashboard";
+import EventsPage from "./EventsPage";
+import AboutPage from "./AboutPage";
 
 const route = createBrowserRouter([
   { path: "/", element: <App /> },
@@ -26,6 +28,8 @@ const route = createBrowserRouter([
   { path: "/payment", element: <PaymentRedirect /> },
   { path: "/order-summary", element: <OrderSummaryPage /> },
   { path: "/checkout", element: <CheckoutReservation /> },
+  { path: "/events", element: <EventsPage /> },
+  { path: "/about", element: <AboutPage /> },
 ]);
 
 createRoot(document.getElementById("root")!).render(

@@ -4,7 +4,6 @@ import axios from "axios";
 import { toast } from "sonner";
 import { authClient } from "./lib/auth-client";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -16,7 +15,7 @@ import {
 import { Badge } from "./components/ui/badge";
 import { Button } from "./components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
-import { Pencil, Ticket, Trash2, Users } from "lucide-react";
+import { Ticket} from "lucide-react";
 
 interface UserEvent {
   attendee_id: number;
@@ -48,7 +47,6 @@ export const UserDashboard = () => {
   const { data: session } = authClient.useSession();
   const userEmail = session?.user?.email;
 
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -72,7 +70,13 @@ export const UserDashboard = () => {
   }, [userEmail]);
 
   if (loading) return <div>Loading...</div>;
-  if (events.length === 0) return <div>No reservations found.</div>;
+  if (events.length === 0) return(
+    <>
+    <NavBar/>
+    <div>No reservations found.</div>;
+    <Footer/>
+    </>
+  ) 
 
   return (
     <>
