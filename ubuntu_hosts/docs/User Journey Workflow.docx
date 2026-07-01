@@ -1,0 +1,121 @@
+Functional Business Logic Specification
+Project: ubuntu_hosts — Event Management & RSVP Platform
+
+Purpose: This document describes the step-by-step functional flow of the application's core actions from the end user's perspective, as implemented in the current codebase (server/modules/events, server/modules/users, server/modules/payments). It is written for developers who need an unambiguous description of current behavior, not a proposed redesign.
+Core Entities
+Event  —  server/db/schema.ts + events.schemas.ts
+Attendee  —  users.schemas.ts — created via free RSVP
+Registration  —  payments.schemas.ts — created via paid checkout (Chapa)
+User  —  better-auth: role = "attendee" | "organizer"
+
+NOTE: There are two parallel "sign up for an event" paths in this codebase — free RSVP (Attendee) and paid Registration (Chapa payment). They use separate tables and are not currently linked to each other. This is called out explicitly below since it affects how "capacity" behaves.
+
+1. Event — Create
+Action: Create Event
+Step 1: User clicks "Create Event" and submits the form (title, date, time, location, description, capacity, price, category, isRsvpRequired, imageUrl).
+Step 2: System validates the payload against createEventSchema (all fields required except available_capacity and imageUrl, which have defaults).
+Step 3: If validation fails, system returns a 400 with field-level Zod errors.
+Step 4: System inserts a new Event record, setting available_capacity = capacity (full seats open).
+Step 5: API responds 201 with { message: "Event created", event }.
+
+⚠ DISCREPANCY TO FLAG: The route comment says "PROTECTED — organizer only," but POST /events currently has no requireOrganizer (or even requireAuth) middleware attached — any caller, authenticated or not, can create an event. Confirm with the team whether this is intentional before documenting it as final behavior.
+
+2. Event — Read
+Action: View Event List (public)
+Step 1: User loads the events page (or calls GET /events).
+Step 2: System reads query params: page (default 1), limit (10–100, default 10), sortBy ("date" | "location", default "date"), order ("asc" | "desc", default "asc"), category (optional).
+Step 3: System queries events, optionally filtered by category (only applied if it's a recognized category value), sorted and paginated accordingly.
+Step 4: API returns { events, pagination: { page, limit, total, totalPages, hasNextPage, hasPrevPage } }.
+Action: View Event Details (public)
+Step 1: User clicks an event or loads GET /events/:id.
+Step 2: System fetches the Event by id.
+Step 3: If not found, API returns 404 { message: "Event not found" }.
+Step 4: API returns { event }.
+Action: View Attendees for an Event (organizer only)
+Step 1: Organizer clicks "View Attendees" on an event they manage.
+Step 2: requireOrganizer middleware verifies the caller is authenticated and has role "organizer"; otherwise 401/403.
+Step 3: System confirms the event exists (404 if not).
+Step 4: System returns the list of Attendee records (name, email) for that event.
+
+3. Event — Update
+Action: Edit Event (organizer only)
+Step 1: Organizer submits changes via PUT /events/:id.
+Step 2: requireOrganizer middleware verifies role; 401 if not logged in, 403 if not an organizer.
+Step 3: System validates the payload against updateEventSchema (all fields optional/partial).
+Step 4: System loads the existing event; if not found, returns 404.
+Step 5: System updates the Event record with the provided fields.
+Step 6: System compares old vs. new date/time/location. If any of these changed AND the event has attendees, system emails every attendee an "event updated" notice (eventUpdateAlertMail) with old/new values. Email failures per-attendee are logged but do not fail the request.
+Step 7: API returns { message: "Event updated", event }.
+
+NOTE: Updating capacity does not currently reconcile available_capacity — only creation sets available_capacity = capacity. If an organizer raises or lowers capacity after registrations exist, available_capacity is not recalculated automatically. Flag this for confirmation with the team.
+
+4. Event — Delete
+Action: Delete Event (organizer only)
+Step 1: Organizer clicks "Delete" on an event via DELETE /events/:id.
+Step 2: requireOrganizer middleware verifies role; 401/403 as above.
+Step 3: System loads the event and its attendee list before deleting.
+Step 4: If event not found, returns 404.
+Step 5: System deletes the Event row (hard delete). Attendee rows cascade-delete automatically (FK onDelete: 'cascade').
+Step 6: If there were attendees, system emails each one an "event cancelled" notice (eventCancellationAlertMail). Failures are logged, not fatal.
+Step 7: API returns { message: "Event deleted", event }.
+
+5. Free RSVP — Create (Attendee registration, no payment)
+Action: Register for Event (RSVP)
+Step 1: User submits POST /events/:id/rsvp with { name, email }.
+Step 2: System validates eventId is numeric (400 if not) and that name + email are present (400 if missing).
+Step 3: System validates email format via regex (400 if invalid).
+Step 4: System fetches the event; 404 if it doesn't exist.
+Step 5: System checks available_capacity > 0; if sold out, returns 409 { error: "Event is sold out", soldOut: true }.
+Step 6: System checks for an existing Attendee with the same event_id + email; if found, returns 409 "already registered."
+Step 7: System re-checks availability immediately before inserting (reduces, doesn't eliminate, race conditions), then throws "Event is sold out" if it changed in the gap.
+Step 8: System inserts a new Attendee record with status "Registered."
+Step 9: System decrements the Event's available_capacity by 1.
+Step 10: If APP_ENV = "development", system emails the attendee a confirmation (registrationConfirmationMail); failures are logged, not fatal.
+Step 11: API returns 201 { message: "Registration successful", confirmation }.
+Action: Check Event Availability (public)
+Step 1: User/UI calls GET /events/:id/availability.
+Step 2: System returns { status: "available" | "sold_out", available, total, soldOut } based on available_capacity vs. capacity.
+Action: Export Attendees as CSV
+Step 1: Caller requests GET /events/:id/attendees/export.
+Step 2: System confirms event exists (404 if not).
+Step 3: System builds a CSV (Name, Email, Status, Registered At) from all attendees.
+Step 4: API streams the CSV back as an attachment.
+
+⚠ This export route has no auth middleware attached, unlike the GET /:id/attendees route in events.routes.ts which requires organizer role. Confirm whether that's intended.
+
+Action: View My Registered Events (by email)
+Step 1: User requests GET /events/user/:email.
+Step 2: System joins Attendee + Event on email, returns all events that email has RSVP'd to, with status and registration date.
+
+6. Paid Registration — Create (Chapa checkout flow)
+Action: Initialize Payment / Registration
+Step 1: User submits POST /payments/initialize with { event_id, first_name, last_name, email, amount }.
+Step 2: System validates payload against initializePaymentSchema.
+Step 3: System generates a unique tx_ref (uuid-based).
+Step 4: System calls the Chapa API to initialize a transaction, requesting a checkout_url.
+Step 5: If Chapa fails to return a checkout_url, system throws an error (no Registration row is created).
+Step 6: On success, system inserts a Registration record with payment_status "pending".
+Step 7: API returns { checkout_url, tx_ref } so the UI can redirect the user to Chapa's hosted checkout page.
+
+⚠ This flow does NOT check event capacity or duplicate registration before creating a pending Registration — unlike the free RSVP flow. Confirm with the team whether capacity/duplicate checks are intentionally skipped here or missing.
+
+Action: Verify Payment
+Step 1: After completing checkout, the user is redirected back and the client (or Chapa's callback) calls GET /payments/verify/:tx_ref.
+Step 2: System calls Chapa's verify endpoint for that tx_ref.
+Step 3: If Chapa reports status "success", system updates the matching Registration's payment_status to "paid" and returns { verified: true, status: "paid" }.
+Step 4: Otherwise, system returns { verified: false, status: <chapa status> } and leaves the Registration as "pending" (no retry/expiry logic present).
+
+⚠ Successful payment does not decrement the Event's available_capacity — that only happens in the free RSVP path. Paid Registrations are not reflected in event capacity at all currently.
+
+7. Tickets Module
+server/modules/tickets/ (tickets.routes.ts, tickets.services.ts) exist as empty files — no logic implemented yet. Flagging so this isn't mistaken for "read but nothing to do" versus "not built yet."
+
+Open Questions for the Team
+(Do not guess — confirm before build-out.)
+
+1.Should POST /events require organizer auth, matching its comment?
+2.Should free RSVP (attendees) and paid Registration (registrations) be unified into a single "ticket" concept, or are they intentionally separate products (free RSVP events vs. paid events)?
+3.Should a successful Chapa payment also decrement available_capacity and run the same duplicate/sold-out checks as the RSVP path?
+4.Should updateEvent recalculate available_capacity when capacity changes?
+5.Should the CSV export route require organizer auth like the JSON attendees route does?
+6.What is the intended purpose of the empty tickets module — is it meant to replace/consolidate attendees + registrations?
